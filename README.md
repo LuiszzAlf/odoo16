@@ -7,12 +7,12 @@
 ```bash
     docker-compose up
 ```
-# Entrar al contenedor odoo10
+# Entrar al contenedor odoo16
 
 ```bash
-docker exec -u root -t -i odoo10 /bin/bash
+docker exec -u root -t -i odoo16 /bin/bash
 ```
-# Ejecutar en contenedor odoo10
+# Ejecutar en contenedor odoo16
 ```bash
 apt update -y
 ```
