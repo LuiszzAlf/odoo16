@@ -1,0 +1,24 @@
+<odoo>
+    <data>
+        <menuitem id="presupuestos_menu" name="Presupuesto" sequence="10"/>
+        <menuitem id="presupuestos_presupuesto_submenu" name="Presupuesto" parent="presupuestos_menu" sequence="10" />
+
+
+        <menuitem id="presupuestos_catalogos_submenu" name="Catálogos" parent="presupuestos_menu" sequence="5" />
+        <menuitem id="presupuesto_partida_presupuestal_item_action" name="Partida presupuestal" parent="presupuestos_catalogos_submenu" action="presupuesto_partida_presupuestal_action" />
+        <menuitem id="presupuesto_area_funcional_item_action" name="Área Funcional" parent="presupuestos_catalogos_submenu" action="presupuesto_area_funcional_action"  />
+        <menuitem id="presupuesto_fondo_economico_item_action" name="Fondo" parent="presupuestos_catalogos_submenu" action="presupuesto_fondo_economico_action"  />
+        <menuitem id="presupuesto_centro_gestor_item_action" name="Centro Gestor" parent="presupuestos_catalogos_submenu" action="presupuesto_centro_gestor_action"  />
+        <menuitem id="presupuesto_cuenta_orden_item_action" name="Cuentas de Orden" parent="presupuestos_catalogos_submenu" action="presupuesto_cuenta_orden_action"  />
+        <menuitem id="presupuesto_clase_documento" name="Clase Documento" parent="presupuestos_catalogos_submenu" action="presupuesto_clase_documento_action"  />
+        <menuitem id="presupuesto_version_item_action" name="Versión" parent="presupuestos_catalogos_submenu" action="presupuesto_version_action"  />
+        <menuitem id="contabilidad_menu" name="Contabilidad" sequence="2"/>
+        <menuitem id="presupuestos_contabilidad_submenu" name="Catálogos" parent="contabilidad_menu" sequence="2" />
+        <!-- <menuitem id="plan_contable_menu" name="Plan Contable" parent="presupuestos_contabilidad_submenu" action="action_account_account_form" sequence="13" /> -->
+        <!-- <menuitem id="facturas_menu" name="Facturas proveedor" parent="presupuestos_contabilidad_submenu" action="account.action_move_in_invoice_type" sequence="13" />
+        <menuitem id="facturas_menu" name="Facturas proveedor" parent="presupuestos_contabilidad_submenu" action="action_account_journal_tja_form" sequence="13" /> -->
+
+
+
+    </data>
+</odoo>

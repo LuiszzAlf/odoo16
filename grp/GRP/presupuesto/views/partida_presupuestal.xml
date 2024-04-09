@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <record model="ir.ui.view" id="presupuesto_partida_presupuestal_view_search">
+      <field name="name">presupuesto.partida_presupuestal.search</field>
+      <field name="model">presupuesto.partida_presupuestal</field>
+      <field name="arch" type="xml">
+        <search>
+          <field name="partida_presupuestal"/>
+        </search>
+      </field>
+    </record>
+
+    <record id="presupuesto_partida_presupuestal_view_form" model="ir.ui.view">
+      <field name="name">presupuesto.partida_presupuestal.form</field>
+      <field name="model">presupuesto.partida_presupuestal</field>
+      <field name="arch" type="xml">
+        <form string="Listado de Partida Presupuestal">
+          <sheet string="Partida Presupuestal">
+            <group col="4" string="Partida Presupuestal">
+              <field name="parent_id"/>
+              <field name="capitulo"/>
+              <field name="concepto"/>
+              <field name="partida_generica"/>
+              <field name="partida_especifica"/>
+              <field name="control_contable_presupuestal"/>
+              <field name="control_contable_presupuestalc"/>
+              <field name="denominacion"/>
+            </group>
+            <notebook>
+              <page string="Partida Presupuestal Hijo">
+                <field name="child_id" string="Partida Presupuestal Hijo">
+                  <tree string="Detalles de la Partida Presupuestal">
+                    <field name="capitulo"/>
+                    <field name="concepto"/>
+                    <field name="partida_generica"/>
+                    <field name="partida_especifica"/>
+                    <field name="control_contable_presupuestal"/>
+                    <field name="control_contable_presupuestalc"/>
+                    <field name="denominacion"/>
+                  </tree>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="presupuesto_partida_presupuestal_view_tree" model="ir.ui.view">
+      <field name="name">presupuesto.partida_presupuestal.tree</field>
+      <field name="model">presupuesto.partida_presupuestal</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="capitulo"/>
+          <field name="concepto"/>
+          <field name="partida_generica"/>
+          <field name="partida_especifica"/>
+          <field name="control_contable_presupuestal"/>
+          <field name="control_contable_presupuestalc"/>
+          <field name="denominacion"/>
+        </tree>
+      </field>
+    </record>
+
+
+    <record id="presupuesto_partida_presupuestal_action" model="ir.actions.act_window">
+      <field name="name">Partida presupuestal</field>
+      <field name="res_model">presupuesto.partida_presupuestal</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[]</field>
+      <field name="view_id" ref="presupuesto_partida_presupuestal_view_tree"/>
+    </record>
+
+  </data>
+</odoo>

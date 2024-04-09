@@ -1,0 +1,9 @@
+PyMySQL==0.7.11
+xlrd
+xlwt
+base
+watchdog==0.10.3
+num2words
+pytz
+openpyxl
+pandas

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <!-- Comentario en la Views -->
+    <record id="conf_flujo_view_form" model="ir.ui.view">
+      <field name="name">tjacdmx.ajustes_flujo_efectivo.form</field>
+      <field name="model">tjacdmx.ajustes_flujo_efectivo</field>
+      <field name="arch" type="xml">
+        <form string="Listado de configuraciones">
+          <sheet string="Version">
+            <group col="4">
+              <field name="periodo"/>
+              <field name="periodo_anterior"/>
+              <field name="anio"/>
+              <field name="importe_periodo"/>
+              <field name="importe_periodo_anterior"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+    <record id="conf_flujo_view_tree" model="ir.ui.view">
+      <field name="name">tjacdmx.ajustes_flujo_efectivo.tree</field>
+      <field name="model">tjacdmx.ajustes_flujo_efectivo</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="periodo"/>
+          <field name="periodo_anterior"/>
+          <field name="anio"/>
+          <field name="importe_periodo"/>
+          <field name="importe_periodo_anterior"/>
+        </tree>
+      </field>
+    </record>
+    <record id="conf_flujo_action" model="ir.actions.act_window">
+      <field name="name">Configuracion de reporte flujo de efectivo</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">tjacdmx.ajustes_flujo_efectivo</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+  </data>
+</odoo>
