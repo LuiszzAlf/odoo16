@@ -110,6 +110,24 @@ class ConfiAuxiliares(models.Model):
             self.env.cr.execute(put_state_active)
         return record
 
+class Titulares(models.Model):
+    _name = 'tjacdmx.titulares.reporte'
+    _rec_name = 'directora_general'
+    _description = "Titulares de area"
+
+    ejercicio_inicio = fields.Selection(EJERCICIO_SELECT,string="Ejercicio inicio", required=True)
+    ejercicio_fin = fields.Selection(EJERCICIO_SELECT,string="Ejercicio fin", required=True)
+    directora_general = fields.Char(string=u'Directora general de administración', required=True)
+    directora_financieros = fields.Char(string='Directora de recursos dinancieros', required=True)
+    jefe_unidad_contable = fields.Char(string='Jefe de unidad departamental de contabilidad', required=True)
+    jefe_unidad_presupuestal = fields.Char(string='Jefe de unidad departamental de control presupuestal', required=True)
+    
+    @api.one
+    def _compute_ejercicios(self):
+        ejercicios_compute = [ year for year in range(self.ejercicio_inicio, self.ejercicio_fin+1)]
+        self.ejercicios=ejercicios_compute
+    ejercicios = fields.Char(string="Ejercicios",compute="_compute_ejercicios")
+
 
 
 
