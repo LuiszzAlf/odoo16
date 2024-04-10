@@ -241,24 +241,24 @@ class ImportesCuentasAnuales(models.Model):
         return result
 
 
-class AreasDireccion(models.Model):
-    _name = 'tjacdmx.contabilidad_saldos_anuales'
-    _rec_name='cuenta'
+# class AreasDireccion(models.Model):
+#     _name = 'tjacdmx.contabilidad_saldos_anuales'
+#     _rec_name='cuenta'
 
-    cuenta = fields.Many2one('account.account',string='Cuenta')
-    cuenta_str = fields.Char(string='Cuenta')
-    anio = fields.Selection(selection=EJERCICIO_SELECT, required=True, default=2018)
-    importe = fields.Float(string='Importe',default=0)
-    cargo = fields.Float(string='Cargo',default=0)
-    abono = fields.Float(string='Abono',default=0)
-    id_reporte = fields.Many2one('reportes.clase_reportes',string='Tipo de Reporte',required=True)
+#     cuenta = fields.Many2one('account.account',string='Cuenta')
+#     cuenta_str = fields.Char(string='Cuenta')
+#     anio = fields.Selection(selection=EJERCICIO_SELECT, required=True, default=2018)
+#     importe = fields.Float(string='Importe',default=0)
+#     cargo = fields.Float(string='Cargo',default=0)
+#     abono = fields.Float(string='Abono',default=0)
+#     id_reporte = fields.Many2one('reportes.clase_reportes',string='Tipo de Reporte',required=True)
 
     
-    def name_get(self):
-        cuenta= self.cuenta.name if self.cuenta.name else 0
-        code= self.cuenta.code if self.cuenta.code else 0
-        result = []
-        for doc in self:
-            name = '%s - %s  ' % (cuenta,code)
-            result.append((doc.id, name))
-        return result
+#     def name_get(self):
+#         cuenta= self.cuenta.name if self.cuenta.name else 0
+#         code= self.cuenta.code if self.cuenta.code else 0
+#         result = []
+#         for doc in self:
+#             name = '%s - %s  ' % (cuenta,code)
+#             result.append((doc.id, name))
+#         return result

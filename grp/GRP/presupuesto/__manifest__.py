@@ -30,6 +30,8 @@ Contabilidad:
         # 'views/account_journal_views.xml',
         # 'wizard/account_move_reversal_view.xml',
         # 'views/account_move_views.xml',
+        'views/notas_estados_financieros.xml',
+        'views/contabilidad.xml',
         'views/account_account_views.xml',
         'views/configuracion/version.xml',
         'views/configuracion/clase_documento.xml',
