@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_situacion_financiera_wizard" model="ir.ui.view">
+        <field name="name">situacion_financiera.wizard.form</field>
+        <field name="model">situacion_financiera.wizard</field>
+        <field name="arch" type="xml">
+        <form edit="false" create="false">
+              <group col="2">
+                <field name="anio" string="Año"/>
+                <field name="periodo" string="Periodo"/>
+              </group>
+          <footer>
+          <div >
+          <button name="report_situacion_financiera" string="PDF" icon="fa-file" type="object" groups="base.group_user"/>
+          o
+          <button string="Cancelar" class="btn btn-primary" style="background-color: #d13c3c; border-color:#d13c3c;" special="cancel" />
+          </div>
+          </footer>
+        </form>
+        </field>
+    </record>
+</odoo>

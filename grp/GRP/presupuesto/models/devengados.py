@@ -12,9 +12,7 @@ import odoo.addons.decimal_precision as dp
 from odoo.tools.float_utils import float_compare
 import collections
 from . import configuracion, catalogos
-import calendar
-from calendar import TimeEncoding, month_name
-from permisos import PermisosManager
+from . import permisos
 import os
 
 class DevengadosLine(models.Model):
@@ -70,8 +68,8 @@ class DevengadosLine(models.Model):
     
     
     def _compute_visible(self):
-        self.invisible_devengado = PermisosManager(self.env,self.env.uid).getVisible('req_devengar')
-        self.invisible_cancelar = PermisosManager(self.env,self.env.uid).getVisible('req_cancelar_compromiso')
+        self.invisible_devengado = permisos.PermisosManager(self.env,self.env.uid).getVisible('req_devengar')
+        self.invisible_cancelar = permisos.PermisosManager(self.env,self.env.uid).getVisible('req_cancelar_compromiso')
         
 
     
@@ -107,7 +105,7 @@ class DevengadosLine(models.Model):
 
     
     def action_devengar(self):
-        PermisosManager(self.env,self.env.uid).getPermiss('req_devengar')            
+        permisos.PermisosManager(self.env,self.env.uid).getPermiss('req_devengar')            
         ctrl_periodo = self.env['control.periodos.wizard']
         if(not ctrl_periodo.get_is_cerrado(self.fecha)):
             obj_documento = self.env['presupuesto.documento']
@@ -190,7 +188,7 @@ class DevengadosLine(models.Model):
 
     
     def action_cancelar(self):
-        PermisosManager(self.env,self.env.uid).getPermiss('req_cancelar_compromiso')            
+        permisos.PermisosManager(self.env,self.env.uid).getPermiss('req_cancelar_compromiso')            
         ctrl_periodo = self.env['control.periodos.wizard']
 
         # if(self.env['presupuesto.solicitud.pago.line'].search([('compromiso','=',self.id)])):

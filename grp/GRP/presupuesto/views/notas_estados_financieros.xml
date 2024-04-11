@@ -43,13 +43,10 @@
             <field name="domain">[]</field>
             <field name="view_id" ref="view_tjacdmx_notas_estados_tree"/>
         </record>
+
         
-        <record id="notas_estados_menu" model="ir.ui.menu">
-            <field name="name">Notas financieras</field>
-            <field name="sequence" eval="10"/>
-            <field name="parent_id" ref="menu_sub_financieros"/>
-            <field name="action" ref="action_presupuesto_notas_estados"/>
-        </record>
+
+        
 
 
 

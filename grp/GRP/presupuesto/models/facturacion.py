@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-from odoo import models, fields, api
+from odoo import api, fields, models, _, tools
 from odoo.exceptions import ValidationError,UserError
-from odoo.tools.translate import _
+# from odoo.tools.translate import _
 from num2words import num2words
 from math import floor
 
@@ -29,8 +29,10 @@ def calcular_precio_total(subtotal, impuestos, presupuestal=True):
     return round(suma_imp + subtotal, 2)
 
 class Factura(models.Model):
-    _name = "account.invoice"
-    _inherit = 'account.invoice'
+    _name = 'account.invoice'
+    _description = u'Facturacion'
+    _rec_name = 'fondo_economico'
+    _inherit = ['mail.thread']
     
     @api.model
     def get_fondo(self):
@@ -82,6 +84,11 @@ class Factura(models.Model):
     requicision = fields.Many2one('presupuesto.requisicion.compras.compromisos.line',string='requicision')
     origin_type = fields.Char(string='origen factura',compute='_compute_origin_fac')
     archivo_factura = fields.Binary(string='Factura digital')
+    area_tb = fields.Many2one('areas.direccion', 'Area')
+    vatios = fields.Float(string="kWh",required=False)
+    litros = fields.Float(string="Litros",required=False)
+    periodo_inicio = fields.Date(string='periodo inicio',required=False)
+    periodo_fin = fields.Date(string='periodo fin',required=False)
 
     def toggle_provision(self):
         if(self.provision==True):
@@ -233,13 +240,13 @@ class Factura(models.Model):
             inv.with_context(ctx).write(vals)
         return True
 
-    # @api.one
+    
     def _compute_cuenta_prov(self):
         cuanta_id = self.env['res.partner'].search([('id','=', self.partner_id.id)])
         cuanta_id_id = self.env['account.account'].search([('id','=', cuanta_id.property_account_payable_id.id)])
         self.cuenta_prove = cuanta_id_id
 
-    # @api.one
+    
     def _compute_o2m_field(self):
         related_ids = []
         moves = self.env['account.move.line'].search([('move_id','=',self.move_id.id)])
@@ -248,7 +255,7 @@ class Factura(models.Model):
     def _compute_clcs(self):
         clcs = self.env['presupuesto.clc'].search([('id_factura','=',self.id)])
         self.clcs_count = len(clcs)
-    # @api.one 
+     
     def _compute_origin_fac(self):
         index=self.origin[0:2]
         self.origin_type = index
@@ -891,13 +898,18 @@ class account_abstract_payment_iner(models.Model):
 
 class FacturaLinea(models.Model):
     _name = "account.invoice.line"
-    _inherit = 'account.invoice.line'
+    _description = 'Facturas linea'
+    _inherit = ['mail.thread']
 
+    invoice_id = fields.Many2one('account.invoice',string='Fondo')
+    purchase_line_id = fields.Many2one('procurement.order.line',string='Fondo')
     partida_presupuestal=fields.Char(string='Partida', compute='_compute_partida')
     line_remision_id=fields.Integer(string='line_id_remi')
     invoice_line_tax_ids = fields.Many2many('account.tax','account_invoice_line_tax', 'invoice_line_id', 'tax_id',string='Taxes')
+    vatios = fields.Float(string="kWh",required=False)
+    litros = fields.Float(string="Litros",required=False)
 
-    # @api.one
+    
     def _compute_partida(self):
         search_partida = self.env['product.template'].search([('id','=',self.product_id.product_tmpl_id.id)])
         self.partida_presupuestal=search_partida.posicion_presupuestaria.partida_presupuestal

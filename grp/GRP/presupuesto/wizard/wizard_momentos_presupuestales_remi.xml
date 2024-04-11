@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_momentos_presupuestales_remi_wizard" model="ir.ui.view">
+        <field name="name">momentos_presupuestales_remi.wizard.form</field>
+        <field name="model">momentos_presupuestales_remi.wizard</field>
+        <field name="arch" type="xml">
+        <form edit="false" create="false">
+            <group col="4">
+            <field name="momento" string="Movimiento"/>
+            <field name="provision" string="Provision" attrs="{'invisible':[('momento','!=', 'ejercido')]}"/>
+            <field name="fecha" attrs="{'readonly':[('provision','=',False)]}" />
+            </group>
+        <footer>
+        <div >
+        <button name="validate_pres_devengado" string="Recibir" type="object" class="oe_highlight" attrs="{'invisible':[('momento','!=', 'devengado')]}" confirm="¿Estas seguro(a) de realizar esta operación?" />
+        <button name="print_clc_win" string="Ejercer" type="object" class="oe_highlight" attrs="{'invisible':[('momento','!=', 'ejercido')]}" confirm="¿Estas seguro(a) de realizar esta operación?"/>
+        <button name="pago_compra_win" string="Pagar" type="object" class="oe_highlight" attrs="{'invisible':[('momento','!=', 'pagado')]}" confirm="¿Estas seguro(a) de realizar esta operación?"/>
+          o
+        <button string="Cancelar" class="oe_link" special="cancel" />
+          </div>
+          </footer>
+        </form>
+        </field>
+    </record>
+</odoo>

@@ -25,13 +25,13 @@ class documentacion(models.Model):
         return number_char
         
     number = fields.Char(default=_default_number)
-    descripcion = fields.Char(string=u'Descripción',track_visibility='onchange')
+    descripcion = fields.Char(string=u'Descripción')
     tipo = fields.Selection([
         ('adjudicacion_directa','Adjudicación directa'),
         ('invitacion_proveedores','Invitación a cuando menos tres proveedores'),
-        ('licitacion_publica','Licitación Pública')],track_visibility='onchange',required=True)
-    fecha = fields.Date(string='Fecha',track_visibility='onchange', default=datetime.today())
-    documentacion_line= fields.One2many('tjacdmx.documentacion.line', 'documento_id', string='Documentos Lines',copy=True,track_visibility='onchange', audit=True)
+        ('licitacion_publica','Licitación Pública')],required=True)
+    fecha = fields.Date(string='Fecha', default=datetime.today())
+    documentacion_line= fields.One2many('tjacdmx.documentacion.line', 'documento_id', string='Documentos Lines',copy=True)
     req_count = fields.Integer(compute="_compute_req", string=' ',default=0)
 
     def _compute_req(self):
@@ -69,8 +69,8 @@ class RemisionesLine(models.Model):
     _order = 'id'
 
     documento_id = fields.Many2one('tjacdmx.documentacion', string='Reference', index=True)
-    documento = fields.Many2one('tjacdmx.documentos', string='Documento',track_visibility='always')
-    archivo = fields.Binary(string='Archivo',track_visibility='always')
+    documento = fields.Many2one('tjacdmx.documentos', string='Documento')
+    archivo = fields.Binary(string='Archivo')
     archivo_html = fields.Html(string='Archivo Binario (HTML)')
 
     

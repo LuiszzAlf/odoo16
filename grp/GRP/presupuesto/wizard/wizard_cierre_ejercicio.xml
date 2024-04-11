@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="wizard_cierre_ejercicio_form" model="ir.ui.view">
+			<field name="name">Cierre de año</field>
+			<field name="model">tjacdmx_cierre_ejercicio</field>
+			<field name="arch" type="xml">
+				<form string="Cierre de año">
+					<div class="oe_title">
+						<h4>Elige un reporte, periodo y año fiscal</h4>
+					</div>
+					<group name="group_top">
+
+						<group name="group_right">
+							<field name="cuenta" string="Cuenta cierre" />
+							<field name="fecha" string="Fecha" />
+						</group>
+					</group>
+					<footer>
+						<button name="create_move" string="Generar" class="oe_highlight" type="object"/>
+						<span class="or_cancel"> o
+							<button special="cancel" string="Cancelar" type="object" class="oe_linl_oe_inline" />
+						</span>
+					</footer>
+				</form>
+			</field>
+		</record>
+		<record id="action_wizard_cierre_ejercicio" model="ir.actions.act_window">
+			<field name="name">Cierre de año</field>
+			<field name="res_model">tjacdmx_cierre_ejercicio</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="wizard_cierre_ejercicio_form" />
+			<field name="target">new</field>
+		</record>
+		<menuitem 
+		id="menu_wizard_cierre_ejercicio"
+		name="Cierre de año"
+		sequence="20"
+		action="action_wizard_cierre_ejercicio"
+		parent="account.menu_finance_reports"
+		/>
+	</data>
+</odoo>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_balanza_v2_wizard" model="ir.ui.view">
+        <field name="name">balanza_v2.wizard.form</field>
+        <field name="model">balanza_v2.wizard</field>
+        <field name="arch" type="xml">
+        <form edit="false" create="false">
+        <p></p>
+        <h3>
+        <div>
+        <group col="4">
+            <field name="radio_nivel_valanza" string="Tipo" attrs="{'required': [('fcheck_state', '=', False)],'invisible':[('fcheck_state','=',True)]}"/>
+            <field name="anio" string="Año" attrs="{'required': [('fcheck_state', '=', False)],'invisible':[('fcheck_state','=',True)]}"/>
+            <field name="periodo" attrs="{'required': [('fcheck_state', '=', False)],'invisible':[('fcheck_state','=',True)]}"/>
+            <field name="periodo_fin" attrs="{'required': ['|',('fcheck_state', '=', False),('radio_nivel_valanza','in',(3,5))],'invisible':['|',('fcheck_state','=',True),('radio_nivel_valanza','in',(1,2,4))]}"/>
+            <div class="col-sm-2" attrs="{'required': [('fcheck_state', '=', False)],'invisible':[('fcheck_state','=',True)]}"><a class="btn oe_highlight" id="busca_items">Buscar</a></div>
+        </group>
+        </div>
+        </h3>
+        <notebook>
+        <page string="Resultado">
+                <div style="display:none;"  id="radio_nivel_valanza_cal"><field name="radio_nivel_valanza_cal"/></div>
+                <div style="display:none;"  id="anio_cal"><field name="anio_cal"/></div>
+                <div style="display:none;"  id="periodo_cal"><field name="periodo_cal"/></div>
+                <div style="display:none;"  id="periodo_fin_cal"><field name="periodo_fin_cal"/></div>
+                <field name="fcheck_state" invisible="1"/>
+                <div><br></br>
+                    <table id="table_balanza_presu" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Cuenta</th>
+                                <th>Nombre</th>
+                                <th>Saldo inicial</th>
+                                <th>Debe</th>
+                                <th>Haber</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+        <script>
+                $("#busca_items" ).click(function() {
+                    var periodo_cal = $("#periodo_cal").text();
+                    var periodo_fin_cal = $("#periodo_fin_cal").text();
+                    var radio_nivel_valanza_cal =$("#radio_nivel_valanza_cal").text();
+                    var anio_cal =$("#anio_cal").text();
+                    var urls = '/balanza_contablev2/'+periodo_cal+'/'+periodo_fin_cal+'/'+anio_cal+'/'+radio_nivel_valanza_cal; 
+                    $('#table_balanza_presu').DataTable({
+                        "responsive": "true",
+                        "destroy": "true",
+                        "ajax": {
+                            "language": {'url': '/presupuestos/static/src/js/Spanish.json'},
+                            "type" : "GET",
+                            "url":urls,
+                            "dataSrc": function ( datas ) {
+                                    $("#csv_download").attr("href", datas.b64_data);
+                                    return datas.items;
+                                }
+                            },
+                        "columns": [
+                            { "data": "code" },
+                            { "data": "cuenta" },
+                            { "data": "saldo_inicial" },    
+                            { "data": "debe" },
+                                { "data": "haber" },
+                                { "data": "saldo_final" },
+                        ]
+                    });  
+                });
+        </script>
+        </page>
+            <page string="Opciones">
+             <group col="4">
+                <button name="sincronizar_balanza" string="Actualizar balanza" type="object" class="oe_highlight"  attrs="{'required': [('fcheck_state', '=', False)],'invisible':[('fcheck_state','=',True)]}" />
+             </group>
+            </page>
+            <!-- <page string="Cierre de año">
+            <div><p>Para cerrar presiona la casilla siguiente para habilitar las opciones.</p></div>
+            <group col="4">
+                <field name="anio_cierre" string="Año a cerrar" attrs="{'required': [('fcheck_state', '=', True)],'invisible':[('fcheck_state','=',False)]}" />
+                <field  name="cuenta_saldo" attrs="{'required': [('fcheck_state', '=', True)],'invisible':[('fcheck_state','=',False)]}" />
+                <button name="close_year" string="Cerrar año" type="object" class="oe_highlight"  attrs="{'invisible':[('fcheck_state','=',False)]}" />
+            </group>
+            </page> -->
+        </notebook>
+            <footer>
+              <div>
+              
+                <button name="search_cuentas_origen" string="Descargar PDF" icon="fa-files-o" type="object" default_focus="1" class="oe_highlight"  attrs="{'required': [('fcheck_state', '=', False)],'invisible':[('fcheck_state','=',True)]}" />
+                <a attrs="{'invisible':['|',('periodo_cal','=',False),('fcheck_state','=',True)]}" class="btn btn-success" icon="fa-file" id="csv_download" href="#" target="_blank" download="balanza_contable.xls">
+                    <div class="fa fa-fw fa-file-excel-o o_button_icon"></div>Excel</a>
+                or
+                <button string="Cancelar" class="oe_link" special="cancel" />
+              </div>
+            </footer>
+        </form>
+        </field>
+    </record>
+</odoo>

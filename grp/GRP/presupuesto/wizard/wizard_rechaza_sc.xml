@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="wizard_rechaza_sc_wizard" model="ir.ui.view">
+        <field name="name">rechaza_solicitud_compra.wizard.form</field>
+        <field name="model">rechaza_solicitud_compra.wizard</field>
+        <field name="arch" type="xml">
+        <form edit="false" create="false">
+            <group>
+              <field name="comentarios" string="Comentarios"/>
+            </group>
+        <footer>
+        <div >
+        <button name="rechaza" string="Continuar" type="object" class="oe_highlight" confirm="¿Estas seguro(a) de realizar esta operación?"/>
+          o
+        <button string="Cancelar" class="oe_link" special="cancel" />
+          </div>
+          </footer>
+        </form>
+        </field>
+    </record>
+</odoo>

@@ -5,7 +5,7 @@ from odoo.tools.translate import _
 from num2words import num2words
 import xlwt
 import json
-from odoo import api, fields, models, _
+from odoo import api, fields, models, _, tools
 
 
 class SalidadeProductos(models.Model):
@@ -68,7 +68,7 @@ class SolicitudSuministroLinea(models.Model):
 
     estado_ss = fields.Char(string="Edo. S.S.", compute="_get_entrega")
 
-    # @api.one
+    
     def _get_entrega(self):
         scrap = self.env['stock.scrap'].search([('linea_suministro','=',self.id)])
         self.producto_entre = scrap.product_id.name
@@ -245,7 +245,7 @@ class Remisiones(models.Model):
     amount_origin=fields.Float(string='Valor antes', readonly=True, compute='_amount_move')
     amount_destination=fields.Float(string='Valor despues', readonly=True, compute='_amount_move')
 
-    # @api.one
+    
     def _amount_move(self):
         self.amount_origin=self.move_origin.inventory_value if self.move_origin.inventory_value else 0
         self.amount_destination=self.move_destination.inventory_value if self.move_destination.inventory_value else 0
@@ -270,6 +270,414 @@ class ValoracionInventario(models.Model):
                 'type': 'ir.actions.act_window',
                 'context': {'origin': self.id}
             } 
+
+
+
+
+# class viewSalidasInventarioDetalle(models.Model):
+#     _name = 'tjacdmx.view_salidas_inventario_detalle'
+#     _auto = False
+#     _order = "partida_presupuestal asc"
+    
+#     id = fields.Integer(string='id')
+#     mes = fields.Integer(string='mes')
+#     anio = fields.Char(string='anio')
+#     partida_presupuestal = fields.Char(string='partida_presupuestal')
+#     area = fields.Char(string='areas')
+#     departamento = fields.Char(string='departamento')
+#     denominacion = fields.Char(string='denominacion')
+#     salidas = fields.Float(string='salidas')
+#     importe_salida = fields.Float(string='importe_salida')
+
+#     def _select(self):
+#         select_str = """
+#         select  row_number() OVER () AS id,
+#                 EXTRACT(MONTH FROM ss.date_expected) mes, 
+#                 cast(EXTRACT(YEAR FROM ss.date_expected) as varchar) anio,
+#                 ppp.partida_presupuestal as "partida_presupuestal",
+#                 COALESCE(ss.areas, 'Sin especificar'::character varying) AS area,
+#                 COALESCE(ss.departamento, 'Sin especificar'::character varying) AS departamento,
+#                 ppp.denominacion,
+#                 sum(ss.scrap_qty) as "salidas", 
+#                 COALESCE(sum(ss.importe_salida_clone), 0) importe_salida
+#         """
+#         return select_str
+
+#     def _group_by(self):
+#         group_by_str = """
+#             group by 2,3,4,5,6,7
+#         """
+#         return group_by_str
+
+#     def _order_by(self):
+#         order_by_str = """
+#             order by anio
+#         """
+#         return order_by_str
+
+#     def init(self):
+#         tools.drop_view_if_exists(self._cr, self._table)
+#         self._cr.execute("""
+#             CREATE view %s as
+#                 %s
+#                from stock_scrap ss
+#                 inner join product_product pp on pp.id=ss.product_id
+#                 inner join product_template pt on pt.id = pp.product_tmpl_id
+#                 inner join product_uom pu on pu.id=pt.uom_id
+#                 join presupuesto_partida_presupuestal ppp on ppp.id=pt.posicion_presupuestaria 
+#                 where  ppp.partida_presupuestal  in ('211100','214100','215100','216100','217100','221100','223100','233100','243100','244100','245100','246100',
+#                 '247100','248100','249100','253100','254100','256100','261100','271100','272100','274100','291100','292100','293100','294100','296100','299100')
+#                 %s
+#                 %s
+#         """ % (self._table, self._select(), self._group_by(), self._order_by()))
+
+
+# class viewSalidasInventario(models.Model):
+#     _name = 'tjacdmx.view_salidas_inventario'
+#     _auto = False
+#     _order = "partida_presupuestal asc"
+    
+#     id = fields.Integer(string='id')
+#     mes = fields.Integer(string='mes')
+#     anio = fields.Char(string='anio')
+#     partida_presupuestal = fields.Char(string='partida_presupuestal')
+#     denominacion = fields.Char(string='denominacion')
+#     salidas = fields.Float(string='salidas')
+#     importe_salida = fields.Float(string='importe_salida')
+
+#     def _select(self):
+#         select_str = """
+#         select  row_number() OVER () AS id,
+#                 EXTRACT(MONTH FROM ss.date_expected) mes, 
+#                 cast(EXTRACT(YEAR FROM ss.date_expected) as varchar) anio,
+#                 ppp.partida_presupuestal as "partida_presupuestal",
+#                 ppp.denominacion,
+#                 sum(ss.scrap_qty) as "salidas", 
+#                 COALESCE(sum(ss.importe_salida_clone), 0) importe_salida
+#         """
+#         return select_str
+
+#     def _group_by(self):
+#         group_by_str = """
+#             group by 2,3,4,5
+#         """
+#         return group_by_str
+
+#     def _order_by(self):
+#         order_by_str = """
+#             order by anio
+#         """
+#         return order_by_str
+
+#     def init(self):
+#         tools.drop_view_if_exists(self._cr, self._table)
+#         self._cr.execute("""
+#             CREATE view %s as
+#                 %s
+#                from stock_scrap ss
+#                 inner join product_product pp on pp.id=ss.product_id
+#                 inner join product_template pt on pt.id = pp.product_tmpl_id
+#                 inner join product_uom pu on pu.id=pt.uom_id
+#                 join presupuesto_partida_presupuestal ppp on ppp.id=pt.posicion_presupuestaria 
+#                 where  ppp.partida_presupuestal  in ('211100','214100','215100','216100','217100','221100','223100','233100','243100','244100','245100','246100',
+#                 '247100','248100','249100','253100','254100','256100','261100','271100','272100','274100','291100','292100','293100','294100','296100','299100')
+#                 %s
+#                 %s
+#         """ % (self._table, self._select(), self._group_by(), self._order_by()))
+
+# class viewSalidasProductoArea(models.Model):
+#     _name = 'tjacdmx.view_salidas_producto_area'
+#     _description = "salidas propucto Almacen"
+#     _auto = False
+#     _order = "mes"
+    
+#     id = fields.Integer(string='id')
+#     mes = fields.Integer(string='mes')
+#     anio = fields.Char(string='anio')
+#     producto_id = fields.Integer(string='producto_id')
+#     partida_presupuestal = fields.Char(string='partida_presupuestal')
+#     producto = fields.Char(string='producto')
+#     area = fields.Char(string='area')
+#     departamento = fields.Char(string='departamento')
+#     salidas = fields.Float(string='salidas')
+#     importe_salida = fields.Float(string='importe_salida')
+
+#     def _select(self):
+#         select_str = """
+#         select
+#             row_number() OVER () AS id,
+#             EXTRACT(MONTH FROM ss.date_expected) mes, 
+# 	        cast(EXTRACT(YEAR FROM ss.date_expected) as varchar)  anio,
+#             pt.id as producto_id,
+#             ppp.partida_presupuestal,
+#             pt."name" as "producto",
+#             coalesce(tsim.area, 'Sin especificar') area,
+#             coalesce(tsim.departamento, 'Sin especificar') departamento,
+#             sum(ss.scrap_qty) as "salidas",
+#             sum(ss.importe_salida_clone) importe_salida
+#         """
+#         return select_str
+
+#     def _group_by(self):
+#         group_by_str = """
+#             group by 2,3,4,5,6,7,8
+#         """
+#         return group_by_str
+
+#     def _order_by(self):
+#         order_by_str = """
+#             order by 2
+#         """
+#         return order_by_str
+
+#     def init(self):
+#         tools.drop_view_if_exists(self._cr, self._table)
+#         self._cr.execute("""
+#             CREATE view %s as
+#                 %s
+#                from
+#                 stock_scrap ss
+#                 inner join product_product pp on
+#                     pp.id = ss.product_id
+#                 inner join product_template pt on
+#                     pt.id = pp.product_tmpl_id
+#                 inner join product_uom pu on
+#                     pu.id = pt.uom_id
+#                 join presupuesto_partida_presupuestal ppp on
+#                     ppp.id = pt.posicion_presupuestaria
+#                 join tjacdmx_salida_inventario_masiva tsim on tsim.id=ss.salida_masiva_id
+#                 where ppp.capitulo = 2
+#                 %s
+#                 %s
+#         """ % (self._table, self._select(), self._group_by(), self._order_by()))
+
+
+
+
+# class view_servicio_electrico(models.Model):
+#     _name = 'tjacdmx.view_servicio_electrico'
+#     _description = "salidas propucto Almacen"
+#     _auto = False
+    
+#     id = fields.Integer(string='id')
+#     producto_id = fields.Integer(string='producto_id')
+#     servicio = fields.Char(string='servicio')
+#     edificio = fields.Char(string='edificio')
+#     proveedor = fields.Char(string='proveedor')
+#     categoria_id = fields.Integer(string='categoria_id')
+#     categoria = fields.Char(string='categoria')
+#     partida = fields.Char(string='partida')
+#     no_factura = fields.Char(string='no_factura')
+#     requisicion = fields.Char(string='requisicion')
+#     descripcion = fields.Char(string='descripcion')
+#     fecha = fields.Date(string='fecha')
+#     total = fields.Float(string='total')
+#     total_unitario = fields.Float(string='total_unitario')
+
+#     def _select(self):
+#         select_str = """
+#        select
+#         row_number() OVER () AS id,
+#         pt.id producto_id,
+#         pt."name" servicio,
+#         (CASE WHEN pt.id=1181 THEN 'COYOACAN' 
+# 	      WHEN pt.id=1182 THEN 'INSURGENTES' 
+# 	      WHEN pt.id=1183 THEN 'NEBRASKA'
+# 	      WHEN pt.id=1121 THEN 'COYOACAN'
+# 	      WHEN pt.id=1122 THEN 'INSURGENTES'
+# 	      WHEN pt.id=1123 THEN 'NEBRASKA' ELSE 'Indefinido' END) edificio,
+#         rp."name" proveedor,
+#         pc.id categoria_id,
+#         pc."name" categoria,
+#         ppp.partida_presupuestal partida,
+#         tr.no_factura,
+#         prccl."name" requisicion,
+#         prccl.descripcion,
+#         trl.date_planned fecha,
+#         trl.price_total total,
+#         trl.price_unit total_unitario
+#         """
+#         return select_str
+
+#     def _group_by(self):
+#         group_by_str = """
+            
+#         """
+#         return group_by_str
+
+#     def _order_by(self):
+#         order_by_str = """
+#             order by 10 desc
+#         """
+#         return order_by_str
+
+#     def init(self):
+#         tools.drop_view_if_exists(self._cr, self._table)
+#         self._cr.execute("""
+#             CREATE view %s as
+#                 %s
+#                from product_template pt 
+#                 join product_product pp on pp.product_tmpl_id =pt.id
+#                 join tjacdmx_remisiones_line trl on trl.product_id =pp.id
+#                 join tjacdmx_remisiones tr on tr.id=trl.remision_id
+#                 join res_partner rp on rp.id=tr.partner_id
+#                 join product_category pc on pc.id=pt.categ_id
+#                 join presupuesto_partida_presupuestal ppp on ppp.id=pt.posicion_presupuestaria
+#                 join  presupuesto_requisicion_compras_compromisos_line prccl on prccl.id=tr.origin
+#                 where pt.id in (1181, 1182, 1183, 1121, 1122, 1123,1231,1248,1384,1212) and trl.state='pagado'
+#                 %s
+#                 %s
+#         """ % (self._table, self._select(), self._group_by(), self._order_by()))
+
+
+class view_servicios_normatividad(models.Model):
+    _name = 'tjacdmx.view_servicios_normatividad'
+    _description = "Normatividad"
+    _auto = False
+    
+    id = fields.Integer(string='id')
+    account_id = fields.Integer(string='account_id')
+    nombre_cuenta = fields.Char(string='nombre_cuenta')
+    cuenta = fields.Char(string='cuenta')
+    fecha = fields.Date(string='fecha')
+    periodo = fields.Integer(string='periodo')
+    anio = fields.Char(string='anio')
+    saldo_inicial = fields.Float(string='saldo_inicial')
+    debe = fields.Float(string='debe')
+    haber = fields.Float(string='haber')
+    saldo_final = fields.Float(string='saldo_final')
+
+    def _select(self):
+        select_str = """
+       select
+        row_number() over () as id,
+        vb.account_id,
+        vb.nombre_c nombre_cuenta,
+        vb.code cuenta,
+        vb.periodo_fecha fecha,
+        vb.periodo,
+        vb.anio,
+        vb.saldo_inicial,
+        vb.debe,
+        vb.haber,
+        vb.saldo_final
+        """
+        return select_str
+
+    def _group_by(self):
+        group_by_str = """
+            
+        """
+        return group_by_str
+
+    def _order_by(self):
+        order_by_str = """
+            order by 5 desc
+        """
+        return order_by_str
+
+    def init(self):
+        tools.drop_view_if_exists(self._cr, self._table)
+        self._cr.execute("""
+            CREATE view %s as
+                %s
+            from v_balanza vb
+            where
+                vb.account_id in (562, 247, 495, 475, 581, 601, 578, 663, 647,233,651)
+                %s
+                %s
+        """ % (self._table, self._select(), self._group_by(), self._order_by()))
+
+
+
+# class view_servicios_factura(models.Model):
+#     _name = 'tjacdmx.view_servicios_factura'
+#     _description = "Servicios factura"
+#     _auto = False
+    
+#     id = fields.Integer(string='id')
+#     producto = fields.Char(string='producto')
+#     description = fields.Char(string='description')
+#     categoria = fields.Char(string='categoria')
+#     partida_presupuestal = fields.Char(string='partida_presupuestal')
+#     vatios = fields.Float(string='vatios')
+#     litros = fields.Float(string='litros')
+#     periodo_inicio = fields.Date(string='periodo_inicio')
+#     periodo_fin = fields.Date(string='periodo_fin')
+#     price_subtotal = fields.Float(string='price_subtotal')
+#     amount_total = fields.Float(string='amount_total')
+#     date_invoice = fields.Date(string='date_invoice')
+#     date_due = fields.Date(string='date_due')
+#     proveedor = fields.Char(string='proveedor')
+#     area_direccion = fields.Char(string='area_direccion')
+#     edificio = fields.Char(string='edificio')
+
+#     def _select(self):
+#         select_str = """
+#         select
+#             row_number() OVER () AS id,
+#             pt."name" producto,
+#             ail."name" description,
+#             pc."name" categoria,
+#             ppp.partida_presupuestal,
+#             ai.vatios,
+#             ai.litros,
+#             ai.periodo_inicio,
+#             ai.periodo_fin,
+#             ail.price_subtotal,
+#             ai.amount_total,
+#             ai.date_invoice,
+#             ai.date_due,
+#             rp."name" proveedor,
+#             ad.nombre area_direccion,
+#             (CASE WHEN pt.id=1181 THEN 'COYOACÁN' 
+#                 WHEN pt.id=1182 THEN 'INSURGENTES' 
+#                 WHEN pt.id=1183 THEN 'NEBRASKA'
+#                 WHEN pt.id=1121 THEN 'COYOACÁN'
+#                 WHEN pt.id=1122 THEN 'INSURGENTES'
+#                 WHEN pt.id=1123 THEN 'NEBRASKA' ELSE 'Indefinido' END) edificio
+#         """
+#         return select_str
+
+#     def _group_by(self):
+#         group_by_str = """
+            
+#         """
+#         return group_by_str
+
+#     def _order_by(self):
+#         order_by_str = """
+#             order by 10 desc
+#         """
+#         return order_by_str
+
+#     def init(self):
+#         tools.drop_view_if_exists(self._cr, self._table)
+#         self._cr.execute("""
+#             CREATE view %s as
+#                 %s
+#               from
+#                     account_invoice_line ail
+#                 join account_invoice ai on
+#                     ai.id = ail.invoice_id
+#                 join product_product pp on
+#                     pp.id = ail.product_id
+#                 join product_template pt on
+#                     pt.id = pp.product_tmpl_id
+#                 join res_partner rp on
+#                     rp.id = ai.partner_id
+#                 join product_category pc on
+#                     pc.id = pt.categ_id
+#                 join presupuesto_partida_presupuestal ppp on
+#                     ppp.id=pt.posicion_presupuestaria
+#                 left join areas_direccion ad on
+#                     ad.id=ai.area_tb 
+#                 where
+#                     ail.product_id in (1176,1175,1177,1116,1117,1115,1225,1241,1335,1206,1129,1130,1131,1277,1337,1338,1612,1629,1638,1665)
+#                     and ai.state = 'paid_all'
+#                 %s
+#                 %s
+#         """ % (self._table, self._select(), self._group_by(), self._order_by()))
 
 
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_control_estados_wizard" model="ir.ui.view">
+        <field name="name">wizard.control.estados.form</field>
+        <field name="model">wizard.control.estados</field>
+        <field name="arch" type="xml">
+            <form edit="false" create="false">
+                <div>
+                    <group>
+                        <field name="modulo" string="Modulo" />
+                        <field name="remisiones" string="Remisiones" attrs="{'invisible': [('modulo', '!=', 'tjacdmx_remisiones')]}"/>
+                        <field name="facturas" string="Facturas" attrs="{'invisible': [('modulo', '!=', 'account_invoice')]}"/>
+                        <field name="compras" string="Compras" attrs="{'invisible': [('modulo', '!=', 'purchase_order')]}"/>
+                        <field name="solicitud_pago" string="Solicitud de pago" attrs="{'invisible': [('modulo', '!=', 'presupuesto_solicitud_pago')]}"/>
+                        <field name="requisiciones" string="Requisiciones" attrs="{'invisible': [('modulo', '!=', 'presupuesto_requisicion_compras')]}"/>
+                        
+                        <field name="result_html" string="Vista previa"/>
+                        <field name="fecha" string="Fecha"/>
+                        <field name="estado" string="Estado"/>
+                        
+                    </group>
+                </div>
+                <footer>
+                    <div >
+                        <button name="guarda_cambios" string="Guardar" type="object" groups="base.group_user"/>
+                        <button string="Cancelar" class="btn btn-primary" style="background-color: #d13c3c; border-color:#d13c3c;" special="cancel" />
+                    </div>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

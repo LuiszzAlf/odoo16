@@ -38,7 +38,7 @@ class Compra(models.Model):
     type_purchase_button = fields.Char(string='Tipo de compra', default='purchase')
     status_account_move = fields.Char(string='M. Presupuestal', default='ORIGINAL')
     line_asientos_contables = fields.One2many('account.move', string='Asientos contables', compute="_compute_asientos")    
-    # @api.one
+    
     def _compute_asientos(self):
         if(self.type_purchase == 'compra' and self.compromiso):
             self.line_asientos_contables = self.env['account.move'].search(['|',('compra_id','=',self.id),('ref','=',self.compromiso.name)])
@@ -741,7 +741,7 @@ class CompraLine(models.Model):
     # move_ids = fields.One2many('stock.move', 'purchase_line_id', string='Reservation', readonly=True, ondelete='set null', copy=False)
     company_id = fields.Many2one(comodel_name='res.company', related='order_id.company_id', string='Company', store=True, readonly=True)
 
-    # @api.one
+    
     def _compute_partida(self):
         self.partida_producto=self.product_id.posicion_presupuestaria.partida_presupuestal
 
@@ -1130,7 +1130,7 @@ class SalidadeProductos(models.Model):
     linea_suministro = fields.Many2one(comodel_name='solicitud.suministro.lineas')
 
 
-    # @api.one
+    
     def _get_linea_suministro(self):
         self.producto_solicit = self.linea_suministro.producto_solicit
         self.cantidad_solicit = self.linea_suministro.cantidad_solicit
@@ -1153,11 +1153,11 @@ class SalidadeProductos(models.Model):
         self.update({'scrap_qty_clone': self.scrap_qty})
     
 
-    # @api.one
+    
     def _compute_partida(self):
         self.partida_producto=self.product_id.posicion_presupuestaria.partida_presupuestal
 
-    # @api.one
+    
     def _compute_importe_slida(self):
         total_salida =  '{0:.2f}'.format(float(self.product_id.standard_price * self.scrap_qty))
         self.importe_salida = total_salida
@@ -1338,7 +1338,7 @@ class PresupuestoRequisicion(models.Model):
             result.append((doc.id,name))
         return result
 
-    # @api.one
+    
     def compute_nombre_req(self):
         descripcion_s= self.descripcion if self.descripcion else ''
         indice_s= self.indice if self.indice else ''

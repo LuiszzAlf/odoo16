@@ -32,8 +32,8 @@ class Documento(models.Model):
     referencia_factura = fields.Many2one('account.invoice', string='Referencia', readonly=True)
     referencia_pago = fields.Many2one('account.payment', string='Referencia', readonly=True)
     compra_id = fields.Many2one('purchase.order',string='Compra')
-    partida_presupuestal=fields.Char(compute='_compute_partida',string='Partida', store=True)
-    importe=fields.Char(compute='_compute_partida',string='Importe',track_visibility='onchange')
+    partida_presupuestal=fields.Char(string='Partida', store=True)
+    importe=fields.Char(string='Importe',track_visibility='onchange')
     status_rem=fields.Char(string='Estatus de arrastre', default='open')
     tipo=fields.Char(string='Tipo documento',track_visibility='onchange')
     status=fields.Selection(STATUS_DOC,string='Estatus', default='open',track_visibility='onchange')
@@ -61,9 +61,11 @@ class Documento(models.Model):
         self.update({'fecha_contabilizacion': fecha})
         self.update({'periodo': fecha2.month})
         self.update({'ejercicio': fecha2.year})
+        
     def _compute_partida(self):
         #self.partida_presupuestal
         print ('s')
+
     @api.depends('clase_documento')
     def _checar_referencia(self):
         for record in self:
@@ -1935,16 +1937,16 @@ class viewControlPresu(models.Model):
                 to_char(to_timestamp(pd.periodo::text, 'MM'), 'TMMonth') nom_mes,
                 pd.periodo,
                 pd.ejercicio,
-                SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) aprobado,	
-                SUM(CASE WHEN pd.clase_documento = 10 THEN importe ELSE 0 END) remanente,	
-                SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END) ampliacion,	
-                SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) reduccion,
-                SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END) + SUM(CASE WHEN pd.clase_documento = 10 THEN importe ELSE 0 END) -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) modificado,
-                SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END) comprometido,	
-                SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END) devengado,	
-                SUM(CASE WHEN pd.clase_documento = 8 THEN importe ELSE 0 END) pagado,	
-                SUM(CASE WHEN pd.clase_documento = 9 THEN importe ELSE 0 END) ejercido,
-                ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END) + SUM(CASE WHEN pd.clase_documento = 10 THEN importe ELSE 0 END) ) -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) ) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END) disponible
+                SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) aprobado,	
+                SUM(CASE WHEN pd.clase_documento = 10 THEN dd.importe ELSE 0 END) remanente,	
+                SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END) ampliacion,	
+                SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) reduccion,
+                SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END) + SUM(CASE WHEN pd.clase_documento = 10 THEN dd.importe ELSE 0 END) -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) modificado,
+                SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END) comprometido,	
+                SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END) devengado,	
+                SUM(CASE WHEN pd.clase_documento = 8 THEN dd.importe ELSE 0 END) pagado,	
+                SUM(CASE WHEN pd.clase_documento = 9 THEN dd.importe ELSE 0 END) ejercido,
+                ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END) + SUM(CASE WHEN pd.clase_documento = 10 THEN dd.importe ELSE 0 END) ) -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) ) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END) disponible
         """
         return select_str
 
@@ -2326,29 +2328,29 @@ class viewControlPresuAcumulado(models.Model):
                 pd.periodo,
                 to_char(to_timestamp(pd.periodo::text, 'MM'), 'TMMonth') nom_mes,
                 pd.ejercicio,
-                SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) aprobado,	
-                SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) reduccion,
-                SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END) ampliacion,	
-                SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) modificado,
+                SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) aprobado,	
+                SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) reduccion,
+                SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END) ampliacion,	
+                SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) modificado,
                 CASE 
-                    WHEN (pp.capitulo = 1) OR (pp.partida_presupuestal = '398100') OR (pp.partida_presupuestal = '398200') THEN SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) 
-                    WHEN (pp.capitulo = 2) THEN SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)
-					WHEN (pp.capitulo = 3 AND pp.partida_presupuestal != '398100' AND pp.partida_presupuestal !='398200') THEN SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)
-                    WHEN (pp.capitulo = 5) THEN SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END) END comprometido,
-                SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END) devengado,	
-                SUM(CASE WHEN pd.clase_documento = 9 THEN importe ELSE 0 END) ejercido,
-                SUM(CASE WHEN pd.clase_documento = 8 THEN importe ELSE 0 END) pagado,
-                CASE WHEN (pp.capitulo = 1) OR (pp.partida_presupuestal = '398100') OR (pp.partida_presupuestal = '398200') THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)) - (SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)))
-                    WHEN (pp.capitulo = 2) THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END))
-                    WHEN (pp.capitulo = 3) AND (pp.partida_presupuestal != '398100') AND (pp.partida_presupuestal !='398200') THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END))
-                    WHEN (pp.capitulo = 5) THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)) END mod_comp,
-                CASE WHEN (pp.capitulo = 1) OR (pp.partida_presupuestal = '398100') OR (pp.partida_presupuestal = '398200') THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END))
-                    WHEN (pp.capitulo = 2) THEN ((SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END))
-                    WHEN (pp.capitulo = 3) AND (pp.partida_presupuestal != '398100') AND (pp.partida_presupuestal !='398200') THEN ((SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END))
-                    WHEN (pp.capitulo = 5) THEN ((SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END)) END comp_dev,
-                ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END)) mod_dev,
-                ((SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 9 THEN importe ELSE 0 END)) dev_ejer,
-                ((SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 8 THEN importe ELSE 0 END)) dev_pag
+                    WHEN (pp.capitulo = 1) OR (pp.partida_presupuestal = '398100') OR (pp.partida_presupuestal = '398200') THEN SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) 
+                    WHEN (pp.capitulo = 2) THEN SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)
+					WHEN (pp.capitulo = 3 AND pp.partida_presupuestal != '398100' AND pp.partida_presupuestal !='398200') THEN SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)
+                    WHEN (pp.capitulo = 5) THEN SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END) END comprometido,
+                SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END) devengado,	
+                SUM(CASE WHEN pd.clase_documento = 9 THEN dd.importe ELSE 0 END) ejercido,
+                SUM(CASE WHEN pd.clase_documento = 8 THEN dd.importe ELSE 0 END) pagado,
+                CASE WHEN (pp.capitulo = 1) OR (pp.partida_presupuestal = '398100') OR (pp.partida_presupuestal = '398200') THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)) - (SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)))
+                    WHEN (pp.capitulo = 2) THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END))
+                    WHEN (pp.capitulo = 3) AND (pp.partida_presupuestal != '398100') AND (pp.partida_presupuestal !='398200') THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END))
+                    WHEN (pp.capitulo = 5) THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)) END mod_comp,
+                CASE WHEN (pp.capitulo = 1) OR (pp.partida_presupuestal = '398100') OR (pp.partida_presupuestal = '398200') THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END))
+                    WHEN (pp.capitulo = 2) THEN ((SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END))
+                    WHEN (pp.capitulo = 3) AND (pp.partida_presupuestal != '398100') AND (pp.partida_presupuestal !='398200') THEN ((SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END))
+                    WHEN (pp.capitulo = 5) THEN ((SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END)) END comp_dev,
+                ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END)) mod_dev,
+                ((SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 9 THEN dd.importe ELSE 0 END)) dev_ejer,
+                ((SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 8 THEN dd.importe ELSE 0 END)) dev_pag
         """
         return select_str
 
@@ -2429,31 +2431,31 @@ class viewControlPresuAcumulado(models.Model):
                 pd.periodo,
                 to_char(to_timestamp(pd.periodo::text, 'MM'), 'TMMonth') nom_mes,
                 pd.ejercicio,
-                SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) aprobado,	
-                SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) reduccion,
-                SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END) ampliacion,	
-                SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) modificado,
+                SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) aprobado,	
+                SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) reduccion,
+                SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END) ampliacion,	
+                SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) modificado,
                 CASE 
-                    WHEN (pp.capitulo = 1) OR (pp.partida_presupuestal = '398100') OR (pp.partida_presupuestal = '398200') THEN SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) 
-                    WHEN (pp.capitulo = 2) THEN SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)
-					WHEN (pp.capitulo = 3 AND pp.partida_presupuestal != '398100' AND pp.partida_presupuestal !='398200') THEN SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)
-                    WHEN (pp.capitulo = 5) THEN SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END) END comprometido,
-                SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END) devengado,	
-                SUM(CASE WHEN pd.clase_documento = 9 THEN importe ELSE 0 END) ejercido,
-                SUM(CASE WHEN pd.clase_documento = 8 THEN importe ELSE 0 END) pagado,
-                CASE WHEN (pp.capitulo = 1) OR (pp.partida_presupuestal = '398100') OR (pp.partida_presupuestal = '398200') THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)) - (SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)))
-                    WHEN (pp.capitulo = 2) THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END))
-                    WHEN (pp.capitulo = 3) AND (pp.partida_presupuestal != '398100') AND (pp.partida_presupuestal !='398200') THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END))
-                    WHEN (pp.capitulo = 5) THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)) END mod_comp,
-                CASE WHEN (pp.capitulo = 1) OR (pp.partida_presupuestal = '398100') OR (pp.partida_presupuestal = '398200') THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END))
-                    WHEN (pp.capitulo = 2) THEN ((SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END))
-                    WHEN (pp.capitulo = 3) AND (pp.partida_presupuestal != '398100') AND (pp.partida_presupuestal !='398200') THEN ((SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END))
-                    WHEN (pp.capitulo = 5) THEN ((SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END)) END comp_dev,
-                ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END)) mod_dev,
-                ((SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 9 THEN importe ELSE 0 END)) dev_ejer,
-                ((SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 8 THEN importe ELSE 0 END)) dev_pag,
-                ((SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END)) reingreso,
-                ((SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)) -  (SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END))*-1 total_reingreso
+                    WHEN (pp.capitulo = 1) OR (pp.partida_presupuestal = '398100') OR (pp.partida_presupuestal = '398200') THEN SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) 
+                    WHEN (pp.capitulo = 2) THEN SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)
+					WHEN (pp.capitulo = 3 AND pp.partida_presupuestal != '398100' AND pp.partida_presupuestal !='398200') THEN SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)
+                    WHEN (pp.capitulo = 5) THEN SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END) END comprometido,
+                SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END) devengado,	
+                SUM(CASE WHEN pd.clase_documento = 9 THEN dd.importe ELSE 0 END) ejercido,
+                SUM(CASE WHEN pd.clase_documento = 8 THEN dd.importe ELSE 0 END) pagado,
+                CASE WHEN (pp.capitulo = 1) OR (pp.partida_presupuestal = '398100') OR (pp.partida_presupuestal = '398200') THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)) - (SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)))
+                    WHEN (pp.capitulo = 2) THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END))
+                    WHEN (pp.capitulo = 3) AND (pp.partida_presupuestal != '398100') AND (pp.partida_presupuestal !='398200') THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END))
+                    WHEN (pp.capitulo = 5) THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)) END mod_comp,
+                CASE WHEN (pp.capitulo = 1) OR (pp.partida_presupuestal = '398100') OR (pp.partida_presupuestal = '398200') THEN ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END))
+                    WHEN (pp.capitulo = 2) THEN ((SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END))
+                    WHEN (pp.capitulo = 3) AND (pp.partida_presupuestal != '398100') AND (pp.partida_presupuestal !='398200') THEN ((SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END))
+                    WHEN (pp.capitulo = 5) THEN ((SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END)) END comp_dev,
+                ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END)  -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END)) mod_dev,
+                ((SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 9 THEN dd.importe ELSE 0 END)) dev_ejer,
+                ((SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 8 THEN dd.importe ELSE 0 END)) dev_pag,
+                ((SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END)) reingreso,
+                ((SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)) -  (SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END)) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END))*-1 total_reingreso
         """
         return select_str
 
@@ -2621,16 +2623,16 @@ class viewControlPresu(models.Model):
                 to_char(to_timestamp(pd.periodo::text, 'MM'), 'TMMonth') nom_mes,
                 pd.periodo,
                 pd.ejercicio,
-                SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) aprobado,	
-                SUM(CASE WHEN pd.clase_documento = 10 THEN importe ELSE 0 END) remanente,	
-                SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END) ampliacion,	
-                SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) reduccion,
-                SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END) + SUM(CASE WHEN pd.clase_documento = 10 THEN importe ELSE 0 END) -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) modificado,
-                SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END) comprometido,	
-                SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END) devengado,	
-                SUM(CASE WHEN pd.clase_documento = 8 THEN importe ELSE 0 END) pagado,	
-                SUM(CASE WHEN pd.clase_documento = 9 THEN importe ELSE 0 END) ejercido,
-                ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END) + SUM(CASE WHEN pd.clase_documento = 10 THEN importe ELSE 0 END) ) -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) ) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END) disponible
+                SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) aprobado,	
+                SUM(CASE WHEN pd.clase_documento = 10 THEN dd.importe ELSE 0 END) remanente,	
+                SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END) ampliacion,	
+                SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) reduccion,
+                SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END) + SUM(CASE WHEN pd.clase_documento = 10 THEN dd.importe ELSE 0 END) -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) modificado,
+                SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END) comprometido,	
+                SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END) devengado,	
+                SUM(CASE WHEN pd.clase_documento = 8 THEN dd.importe ELSE 0 END) pagado,	
+                SUM(CASE WHEN pd.clase_documento = 9 THEN dd.importe ELSE 0 END) ejercido,
+                ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END) + SUM(CASE WHEN pd.clase_documento = 10 THEN dd.importe ELSE 0 END) ) -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) ) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END) disponible
         """
         return select_str
 
@@ -3143,16 +3145,16 @@ class viewControlPresuV2(models.Model):
                 to_char(to_timestamp(pd.periodo::text, 'MM'), 'TMMonth') nom_mes,
                 pd.periodo,
                 pd.ejercicio,
-                SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) aprobado,	
-                SUM(CASE WHEN pd.clase_documento = 10 THEN importe ELSE 0 END) remanente,	
-                SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END) ampliacion,	
-                SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) reduccion,
-                SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END) + SUM(CASE WHEN pd.clase_documento = 10 THEN importe ELSE 0 END) -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) modificado,
-                SUM(CASE WHEN pd.clase_documento = 6 THEN importe ELSE 0 END) comprometido,	
-                SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END) devengado,	
-                SUM(CASE WHEN pd.clase_documento = 8 THEN importe ELSE 0 END) pagado,	
-                SUM(CASE WHEN pd.clase_documento = 9 THEN importe ELSE 0 END) ejercido,
-                ((SUM(CASE WHEN pd.clase_documento = 3 THEN importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN importe ELSE 0 END) + SUM(CASE WHEN pd.clase_documento = 10 THEN importe ELSE 0 END) ) -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN importe ELSE 0 END) ) - SUM(CASE WHEN pd.clase_documento = 7 THEN importe ELSE 0 END) disponible
+                SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) aprobado,	
+                SUM(CASE WHEN pd.clase_documento = 10 THEN dd.importe ELSE 0 END) remanente,	
+                SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END) ampliacion,	
+                SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) reduccion,
+                SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END) + SUM(CASE WHEN pd.clase_documento = 10 THEN dd.importe ELSE 0 END) -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) modificado,
+                SUM(CASE WHEN pd.clase_documento = 6 THEN dd.importe ELSE 0 END) comprometido,	
+                SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END) devengado,	
+                SUM(CASE WHEN pd.clase_documento = 8 THEN dd.importe ELSE 0 END) pagado,	
+                SUM(CASE WHEN pd.clase_documento = 9 THEN dd.importe ELSE 0 END) ejercido,
+                ((SUM(CASE WHEN pd.clase_documento = 3 THEN dd.importe ELSE 0 END) + SUM(CASE WHEN (pd.clase_documento = 1) OR (pd.clase_documento = 4) THEN dd.importe ELSE 0 END) + SUM(CASE WHEN pd.clase_documento = 10 THEN dd.importe ELSE 0 END) ) -  SUM(CASE WHEN (pd.clase_documento = 2) OR (pd.clase_documento = 5) THEN dd.importe ELSE 0 END) ) - SUM(CASE WHEN pd.clase_documento = 7 THEN dd.importe ELSE 0 END) disponible
         """
         return select_str
 

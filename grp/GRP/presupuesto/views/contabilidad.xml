@@ -99,6 +99,13 @@
             <field name="action" ref="action_cuentas_cierre_ejercicio"/>
         </record>
 
+        <record id="notas_estados_menu" model="ir.ui.menu">
+            <field name="name">Notas financieras</field>
+            <field name="sequence" eval="5"/>
+            <field name="parent_id" ref="menu_sub_financieros"/>
+            <field name="action" ref="presupuesto.action_presupuesto_notas_estados"/>
+        </record>
+
         <record id="cuentas_cierre_ejercicio_menu" model="ir.ui.menu">
             <field name="name">Cuentas de cierre</field>
             <field name="sequence" eval="10"/>

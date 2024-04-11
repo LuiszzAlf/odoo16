@@ -122,7 +122,7 @@ class Titulares(models.Model):
     jefe_unidad_contable = fields.Char(string='Jefe de unidad departamental de contabilidad', required=True)
     jefe_unidad_presupuestal = fields.Char(string='Jefe de unidad departamental de control presupuestal', required=True)
     
-    @api.one
+    
     def _compute_ejercicios(self):
         ejercicios_compute = [ year for year in range(self.ejercicio_inicio, self.ejercicio_fin+1)]
         self.ejercicios=ejercicios_compute

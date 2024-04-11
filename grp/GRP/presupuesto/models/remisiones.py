@@ -4,7 +4,7 @@ import json
 from lxml import etree
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from odoo import api, fields, models, SUPERUSER_ID, _
+from odoo import api, fields, models, _, SUPERUSER_ID,tools
 from odoo.tools import float_is_zero, float_compare
 from odoo.tools.misc import formatLang
 from odoo.exceptions import UserError, RedirectWarning, ValidationError
@@ -186,6 +186,8 @@ class Remisiones(models.Model):
             ('open','Abierto'),
             ('send', 'Enviado'),
             ], string='estado pendiente', index=True, readonly=True, default='draft', copy=False)
+    area_tb = fields.Many2one('areas.direccion', 'Area')
+    
 
 
     @api.onchange('pendiente')
@@ -205,20 +207,20 @@ class Remisiones(models.Model):
         else:
             self.is_list_devengado=True
 
-    # @api.one
+    
     def _compute_total_lines(self):
         total=0
         for it in self.remision_line_ids:
             total=total+float(it['price_subtotal'])
         self.devengado_doc = total
     
-    # @api.one
+    
     def _compute_doc_devengados(self):
         documento=self.env['presupuesto.documento']
         documento_valida=documento.search([('remision_id','=', self.id),('clase_documento','=', 7)],limit=1)
         self.devengado_doc = documento_valida
     
-    # @api.one
+    
     def _compute_vrem(self):
         remision=self.env['tjacdmx.remisiones']
         remision_valida=remision.search([('origin','=', self._default_requisicion_id()),('tipo_remision','in', ('parcial'))])
@@ -1151,7 +1153,7 @@ class RemisionesLine(models.Model):
     price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal', store=True)
     price_total = fields.Monetary(compute='_compute_amount', string='Total', store=True)
     price_tax = fields.Monetary(compute='_compute_amount', string='Impuesto', store=True)
-    # invoice_lines = fields.One2many('account.invoice.line', 'purchase_line_id', string="Linea de factura", readonly=True, copy=False)
+    invoice_lines = fields.One2many('account.invoice.line', 'purchase_line_id', string="Linea de factura", readonly=True, copy=False)
     qty_invoiced = fields.Float(string="Cantidad a facturar", digits=dp.get_precision('Product Unit of Measure'), store=True)
     qty_received = fields.Float(string="Cantidad a facturar", digits=dp.get_precision('Product Unit of Measure'), store=True)
     # procurement_ids = fields.One2many('procurement.order', 'purchase_line_id', string='Adquisiciones asociadas', copy=False)
@@ -1159,6 +1161,9 @@ class RemisionesLine(models.Model):
     partner_id = fields.Many2one('res.partner', related='remision_id.partner_id', string='Proveedor', readonly=True, store=True)
     partida_producto = fields.Char(compute='_compute_partida', string='Partida')
     account_id = fields.Many2one('account.account', string='Cuenta', required=True)
+
+    vatios = fields.Float(string="kWh",required=False)
+    litros = fields.Float(string="Litros",required=False)
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
@@ -1194,14 +1199,14 @@ class RemisionesLine(models.Model):
                 if self.product_uom and self.product_uom.id != product.uom_id.id:
                     self.price_unit = product.uom_id._compute_price(self.price_unit, self.product_uom)
         return {'domain': domain}
-    # @api.v8
+    
     def get_invoice_line_account(self, type, product, fpos, company):
         accounts = product.product_tmpl_id.get_product_accounts(fpos)
         if type in ('out_invoice', 'out_refund'):
             return accounts['income']
         return accounts['expense']
 
-    # @api.one
+    
     def _compute_partida(self):
         self.partida_producto=self.product_id.posicion_presupuestaria.partida_presupuestal
 
@@ -1269,21 +1274,22 @@ class RemisionesLine(models.Model):
         }
         # Fullfill all related procurements with this po line
         diff_quantity = self.product_qty - qty
-        for procurement in self.procurement_ids.filtered(lambda p: p.state != 'cancel'):
-            # If the procurement has some moves already, we should deduct their quantity
-            sum_existing_moves = sum(x.product_qty for x in procurement.move_ids if x.state != 'cancel')
-            existing_proc_qty = procurement.product_id.uom_id._compute_quantity(sum_existing_moves, procurement.product_uom)
-            procurement_qty = procurement.product_uom._compute_quantity(procurement.product_qty, self.product_uom) - existing_proc_qty
-            if float_compare(procurement_qty, 0.0, precision_rounding=procurement.product_uom.rounding) > 0 and float_compare(diff_quantity, 0.0, precision_rounding=self.product_uom.rounding) > 0:
-                tmp = template.copy()
-                tmp.update({
-                    'product_uom_qty': min(procurement_qty, diff_quantity),
-                    'move_dest_id': procurement.move_dest_id.id,  # move destination is same as procurement destination
-                    'procurement_id': procurement.id,
-                    'propagate': procurement.rule_id.propagate,
-                })
-                res.append(tmp)
-                diff_quantity -= min(procurement_qty, diff_quantity)
+        # for procurement in self.procurement_ids.filtered(lambda p: p.state != 'cancel'):
+        #     # If the procurement has some moves already, we should deduct their quantity
+        #     sum_existing_moves = sum(x.product_qty for x in procurement.move_ids if x.state != 'cancel')
+        #     existing_proc_qty = procurement.product_id.uom_id._compute_quantity(sum_existing_moves, procurement.product_uom)
+        #     procurement_qty = procurement.product_uom._compute_quantity(procurement.product_qty, self.product_uom) - existing_proc_qty
+        #     if float_compare(procurement_qty, 0.0, precision_rounding=procurement.product_uom.rounding) > 0 and float_compare(diff_quantity, 0.0, precision_rounding=self.product_uom.rounding) > 0:
+        #         tmp = template.copy()
+        #         tmp.update({
+        #             'product_uom_qty': min(procurement_qty, diff_quantity),
+        #             'move_dest_id': procurement.move_dest_id.id,  # move destination is same as procurement destination
+        #             'procurement_id': procurement.id,
+        #             'propagate': procurement.rule_id.propagate,
+        #         })
+        #         res.append(tmp)
+        #         diff_quantity -= min(procurement_qty, diff_quantity)
+        
         if float_compare(diff_quantity, 0.0,  precision_rounding=self.product_uom.rounding) > 0:
             template['product_uom_qty'] = diff_quantity
             res.append(template)
@@ -1303,9 +1309,9 @@ class RemisionesLine(models.Model):
         for line in self:
             if line.remision_id.state in ['purchase', 'done']:
                 raise UserError(_('Cannot delete a purchase order line which is in state \'%s\'.') %(line.state,))
-            for proc in line.procurement_ids:
-                proc.message_post(body=_('remision line deleted.'))
-            line.procurement_ids.filtered(lambda r: r.state != 'cancel').write({'state': 'exception'})
+            # for proc in line.procurement_ids:
+            #     proc.message_post(body=_('remision line deleted.'))
+            # line.procurement_ids.filtered(lambda r: r.state != 'cancel').write({'state': 'exception'})
         return super(RemisionesLine, self).unlink()
 
     @api.model

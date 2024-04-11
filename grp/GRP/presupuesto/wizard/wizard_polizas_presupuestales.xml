@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_polizas_presupuestales" model="ir.ui.view">
+    <field name="name">polizas_presupuestales.wizard.form</field>
+    <field name="model">polizas_presupuestales.wizard</field>
+    <field name="arch" type="xml">
+      <form edit="false" create="false">
+
+        <group col="4">
+          <field name="fecha_inicio" string="De fecha"/>
+          <field name="fecha_fin" string="a"/>
+          <field name="capitulo" string="Capitulo"/>
+          <field name="partidas" string="Partidas" widget="many2many_tags" options="{'no_create': 'false'}" attrs="{'required': [('capitulo', '&lt;=', '')]}"/>
+          <field name="clase_documento" string="Clase documento" widget="many2many_tags" options="{'no_create': 'false'}"/>
+        </group>
+        <group col="4">
+          <field name="no_poliza" string="Poliza No."/>
+          <field name="concepto" string="Concepto"/>
+          <field name="elaboro" string="Elaboro"/>
+          <field name="reviso" string="Reviso"/>
+          <field name="vobo" string="Clase vobo"/>
+          <field name="autorizo" string="Autorizo"/>
+        </group>
+
+        <footer>
+          <div >
+            <button name="pdf_poliza" string="PDF" icon="fa-file" type="object" groups="base.group_user"/>
+            <button string="Cancelar" class="btn btn-primary" style="background-color: #d13c3c; border-color:#d13c3c;" special="cancel" />
+          </div>
+        </footer>
+      </form>
+    </field>
+  </record>
+  <record id="polizas_prsupuestales_view_tree" model="ir.ui.view">
+    <field name="name">polizas_presupuestales.tree</field>
+    <field name="model">polizas_presupuestales</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="no_poliza" string="Poliza No."/>
+        <field name="concepto" string="Concepto"/>
+        <field name="elaboro" string="Elaboro"/>
+        <field name="reviso" string="Reviso"/>
+        <field name="vobo" string="Clase vobo"/>
+        <field name="autorizo" string="Autorizo"/>
+      </tree>
+    </field>
+  </record>
+</odoo>

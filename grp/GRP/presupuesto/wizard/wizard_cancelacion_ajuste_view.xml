@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_cancelacion_ajuste_wizard" model="ir.ui.view">
+        <field name="name">cancelacion_ajuste.wizard.form</field>
+        <field name="model">cancelacion_ajuste.wizard</field>
+        <field name="arch" type="xml">
+        <form edit="false" create="false">
+            <h2>
+            <field name="momento_documento"/>
+            <field name="momento_contable" invisible="1"/>
+            </h2>
+            <group col="4" string="Información presupuestal">
+            <field name="tipo" invisible="1"/>
+            <field name="tipo_compra" invisible="1"/>
+            <field name="ejercicio" invisible="1"/>
+            <field name="periodo" invisible="1"/>
+            <field name="fecha_documento" invisible="1"/>
+            <field name="partida_presupuestal" attrs="{'invisible':[('tipo_compra','=', 'fondo')]}"/> 
+            <field name="partida_pf" attrs="{'invisible':[('tipo_compra','!=','fondo')]}"/>
+            <field name="str_momento"/>
+            <field name="amount_total" attrs="{'invisible':[('tipo_compra','=', 'fondo')]}"/>
+            <field name="ref_compra" invisible="1"/>            
+            <field name="compra_ids" invisible="1"/>
+            <field name="invoice_id" invisible="1"/>
+            </group>
+            <group col="4" >
+            <field name="tipo_ajuste"/>
+            <field name="fecha_ajuste"/>
+            <field name="monto_cancel"/>
+            </group>
+            <group string="Información contable">
+            <field name="html_apuntes_contables"/>
+            </group>
+        <footer>
+        <div attrs="{'invisible':['|','|',('fecha_ajuste','=', False),('momento_documento','=', False),('monto_cancel','in', (False,0))]}">
+        <button name="cancela_ajuste_fuction" string="Guardar" type="object" class="oe_highlight"/>
+          o
+        <button string="Cancelar" class="oe_link" special="cancel" />
+          </div>
+          </footer>
+        </form>
+        </field>
+    </record>
+</odoo>

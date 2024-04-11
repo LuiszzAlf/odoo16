@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="wizard_cp_acumulado_form" model="ir.ui.view">
+			<field name="name">Control Presupuestal</field>
+			<field name="model">tjacdmx.wizard_cp_acumulado</field>
+			<field name="arch" type="xml">
+				<form string="Control Presupuestal">
+					<div class="oe_title">
+						<h4>Elige un rango de periodos, año fiscal  y partida en su caso a consultar</h4>
+					</div>
+					<group name="group_top">
+						<group name="group_left">
+							<field name="periodo_inicial" string="Periodo Inicio" />
+						</group>
+						<group name="group_right">
+							<field name="periodo_final" string="Periodo Final" />
+						</group>
+                        <group name="group_left">
+							<field name="anio_fiscal" string="Año Fiscal" />
+						</group>
+						<group name="group_right">
+							<field name="tipo_reporte" string="Tipo reporte" />
+						</group>
+						<group name="group_right">
+							<field name="posicion_presupuestaria" string="Partida" />
+						</group>
+					</group>
+					<footer>
+						<button name="open_wizard" string="Generar" class="oe_highlight" type="object"/>
+						<span class="or_cancel"> o
+							<button special="cancel" string="Cancelar" type="object" class="oe_linl_oe_inline" />
+						</span>
+					</footer>
+				</form>
+			</field>
+		</record>
+		<record id="action_wizard_cp_acumulado" model="ir.actions.act_window">
+			<field name="name">Control Presupuestal</field>
+			<field name="res_model">tjacdmx.wizard_cp_acumulado</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="wizard_cp_acumulado_form" />
+			<field name="target">new</field>
+		</record>
+		<menuitem 
+		id="menu_wizard_cp_acumulado"
+		name="Control Presupuestal"
+		sequence="19"
+		action="action_wizard_cp_acumulado"
+		parent="presupuestos.presupuestos_reporte_submenu"
+		/>
+	</data>
+</odoo>
