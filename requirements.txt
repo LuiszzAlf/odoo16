@@ -7,4 +7,3 @@ num2words
 pytz
 openpyxl
 pandas
-calendar

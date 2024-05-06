@@ -9,18 +9,17 @@ class ProductoTemplate(models.Model):
     _name = 'product.template'
     _inherit = 'product.template'
 
-    def _get_default_category_id(self):
-        if self._context.get('categ_id') or self._context.get('default_categ_id'):
-            return self._context.get('categ_id') or self._context.get('default_categ_id')
-        category = self.env.ref('product.product_category_all', raise_if_not_found=False)
-        return category and category.type == 'normal' and category.id or False
+    # def _get_default_category_id(self):
+    #     if self._context.get('categ_id') or self._context.get('default_categ_id'):
+    #         return self._context.get('categ_id') or self._context.get('default_categ_id')
+    #     category = self.env.ref('product.product_category_all', raise_if_not_found=False)
+    #     return category and category.type == 'normal' and category.id or False
 
     name = fields.Char('Name', index=True, required=True, translate=True,track_visibility='onchange')
     posicion_presupuestaria = fields.Many2one('presupuesto.partida_presupuestal',track_visibility='onchange', string='Posición presupuestaria', required=True, domain="[('partida_presupuestal','!=','000000'),('partida_presupuestal','!=','800000'),('partida_presupuestal','!=','700000')]")
     remisiones_count=fields.Integer(compute="_compute_remisiones", string='Entregas',copy=False, default=0)
     purchase_count=fields.Integer(compute="_compute_purchase", string='Compras',copy=False, default=0)
-    categ_id = fields.Many2one('product.category', 'Internal Category',
-        change_default=True, default=_get_default_category_id, domain="[('type','=','normal')]",
+    categ_id = fields.Many2one('product.category', 'Internal Category',change_default=True,
         required=True, help="Select category for the current product",track_visibility='onchange')
     account_stock=fields.Many2one('account.account',string='Cuenta inventario')
     tipo=fields.Selection([
