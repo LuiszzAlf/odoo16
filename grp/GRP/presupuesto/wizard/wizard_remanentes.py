@@ -4,25 +4,25 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo.tools.translate import _
 
-EJERCICIO_SELECT = [ (year, year) for year in range(2018, 2031) ]
-PERIODO_SELECT = [(periodo, periodo) for periodo in range(1,13)]
-TIPO_UP = [(1, 'Periodo'),(2,'Partida')]
-STATUS = [(1, 'Abierto'),(2,'Cerrado')]
+EJERCICIO_SELECT = [ (str(year), str(year)) for year in range(2018, 2031) ]
+PERIODO_SELECT = [(str(periodo), str(periodo)) for periodo in range(1,13)]
+TIPO_UP = [('1', 'Periodo'),('2','Partida')]
+STATUS = [('1', 'Abierto'),('2','Cerrado')]
 
 class Remanentes(models.TransientModel):
     _name = 'remanentes.wizard'
 
-    periodo_origen = fields.Selection(PERIODO_SELECT, required=True, default=1)
+    periodo_origen = fields.Selection(PERIODO_SELECT, required=True, default='1')
     periodo_destino = fields.Selection(PERIODO_SELECT, required=True)
     ejercicio = fields.Selection(EJERCICIO_SELECT, required=True)
 
     @api.onchange('periodo_origen')
-    @api.multi
+    
     def _onchange_periodo_origen(self):
-        periodo_destino=self.periodo_origen+1
-        self.update({'periodo_destino': periodo_destino})
+        periodo_destino=int(self.periodo_origen)+1
+        self.update({'periodo_destino': str(periodo_destino)})
 
-    @api.multi
+    
     def search_partidas_origen(self):
         search_periodo = self.env['presupuesto.view_cp'].search([
             ('ejercicio', '=', self.ejercicio),
@@ -71,7 +71,7 @@ class Remanentes(models.TransientModel):
                         }]
                 documentos_originales.append(doc_origin)
                 
-                fecha_conta=datetime(ejercicio,periodo,01).date()
+                fecha_conta=datetime(ejercicio,periodo,1).date()
                 documento = obj_documento.create({
                     'clase_documento': cls_doc.id,
                     'version': version,

@@ -18,9 +18,9 @@ from . import asset_modify
 # from . import wizard_situacion_financiera
 # from . import wizard_auxiliares
 # from . import wizard_balanza
-# from . import wizard_remanentes
-# from . import wizard_control_periodo
-# from . import wizard_cp_acumulado
+from . import wizard_remanentes
+from . import wizard_control_periodo
+from . import wizard_cp_acumulado
 # from . import wizard_estado_actividades
 # from . import wizard_reportes_financieros
 # from . import wizard_entregas_suministro

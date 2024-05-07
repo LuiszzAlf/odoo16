@@ -6,8 +6,8 @@ from odoo.exceptions import ValidationError
 import calendar
 from dateutil.relativedelta import relativedelta
 
-EJERCICIO_SELECT = [ (year, year) for year in range(2019, 2031)]
-PERIODO_SELECT = [(periodo, periodo) for periodo in range(1,13)]
+EJERCICIO_SELECT = [ (str(year), str(year)) for year in range(2018, 2031) ]
+PERIODO_SELECT = [(str(periodo), str(periodo)) for periodo in range(1,13)]
 
 def _get_month_capital(periodo):
 	month_name = calendar.month_name[periodo]
@@ -27,13 +27,13 @@ class wizard_cp_acumulado(models.TransientModel):
         fecha = datetime.today()
         return  int(fecha.month)
 
-    periodo_inicial = fields.Selection(PERIODO_SELECT,default=1,required = True)
+    periodo_inicial = fields.Selection(PERIODO_SELECT,default='1',required = True)
     periodo_final = fields.Selection(PERIODO_SELECT,default=_select_periodo,required = True)
     anio_fiscal = fields.Selection(EJERCICIO_SELECT,default=_select_anio,required = True)
-    tipo_reporte = fields.Selection([(1,'Control de presupuesto'),(2,'Cuenta Publica')],default=1,required = True)
+    tipo_reporte = fields.Selection([('1','Control de presupuesto'),('2','Cuenta Publica')],default='1',required = True)
     posicion_presupuestaria = fields.Many2one('presupuesto.partida_presupuestal', string='Posicion presupuestaria', domain="[('control_contable_presupuestalc', '=', 0), ('capitulo', '>=', 1), ('capitulo', '<=', 5), ('concepto', '>', 0)]")
 
-    @api.multi
+    
     def open_wizard(self):
         if (self.tipo_reporte==1):
             view_mode = 'tree'

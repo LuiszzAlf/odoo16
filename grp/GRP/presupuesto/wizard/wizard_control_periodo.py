@@ -4,31 +4,31 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo.tools.translate import _
 
-EJERCICIO_SELECT = [ (year, year) for year in range(2018, 2031) ]
-PERIODO_SELECT = [(periodo, periodo) for periodo in range(1,13)]
-TIPO_UP = [(1, 'Periodo'),(2,'Partida')]
-STATUS = [(1, 'Abierto'),(2,'Cerrado')]
+EJERCICIO_SELECT = [ (str(year), str(year)) for year in range(2018, 2031) ]
+PERIODO_SELECT = [(str(periodo), str(periodo)) for periodo in range(1,13)]
+TIPO_UP = [('1', 'Periodo'),('2','Partida')]
+STATUS = [('1', 'Abierto'),('2','Cerrado')]
 
 class ControlPeriodos(models.TransientModel):
     _name = 'control.periodos.wizard'
 
-    tipo_up = fields.Selection(TIPO_UP, required=True, default=1)
+    tipo_up = fields.Selection(TIPO_UP, required=True, default='1')
     
     ejercicio = fields.Selection(EJERCICIO_SELECT, required=True)
     periodo = fields.Selection(PERIODO_SELECT, required=True)
     version = fields.Many2one('presupuesto.version', string='Version', required=True)
     partida_presupuestal = fields.Many2one('presupuesto.partida_presupuestal', string='Posición presupuestaria')
 
-    status = fields.Selection(STATUS, required=True, default=1)
+    status = fields.Selection(STATUS, required=True, default='1')
 
-    @api.multi
+    
     def search_periodo(self):
         search_periodos = self.env['presupuesto.control_presupuesto'].search([
             ('version', '=', self.version.version),
             ('ejercicio', '=', self.ejercicio),
             ('periodo', '=', self.periodo)])
         
-        if self.status==1:
+        if self.status=='1':
             status='open'
         else:
             status='close'
@@ -44,14 +44,14 @@ class ControlPeriodos(models.TransientModel):
        
 
 
-    @api.multi
+    
     def search_periodo_partida(self):
         search_periodos = self.env['presupuesto.control_presupuesto'].search([
             ('version', '=', self.version.version),
             ('ejercicio', '=', self.ejercicio),
             ('periodo', '=', self.periodo),
             ('posicion_presupuestaria', '=', self.partida_presupuestal.id)], limit=1)
-        if self.status==1:
+        if self.status=='1':
             status='open'
         else:
             status='close'
@@ -63,7 +63,7 @@ class ControlPeriodos(models.TransientModel):
         #raise ValidationError("Partida %s actualizada  %s" % (partida_up,id_up))
 
 
-    @api.multi
+    
     def get_is_cerrado(self, fecha):
 
         fecha = str(fecha)

@@ -39,17 +39,16 @@
 			<field name="name">Control Presupuestal</field>
 			<field name="res_model">tjacdmx.wizard_cp_acumulado</field>
 			<field name="type">ir.actions.act_window</field>
-			<field name="view_type">form</field>
 			<field name="view_mode">form</field>
 			<field name="view_id" ref="wizard_cp_acumulado_form" />
 			<field name="target">new</field>
 		</record>
-		<menuitem 
+		<!-- <menuitem 
 		id="menu_wizard_cp_acumulado"
 		name="Control Presupuestal"
 		sequence="19"
 		action="action_wizard_cp_acumulado"
 		parent="presupuestos.presupuestos_reporte_submenu"
-		/>
+		/> -->
 	</data>
 </odoo>

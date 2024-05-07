@@ -27,4 +27,13 @@
         </form>
         </field>
     </record>
+
+    <record id="action_wizard_remanentes" model="ir.actions.act_window">
+			<field name="name">Remanentes</field>
+			<field name="res_model">remanentes.wizard</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_remanentes_wizard" />
+			<field name="target">new</field>
+		</record>
 </odoo>

@@ -26,10 +26,15 @@ Contabilidad:
     
     """,
     'data': [
-
-        # 'views/account_journal_views.xml',
-        # 'wizard/account_move_reversal_view.xml',
-        # 'views/account_move_views.xml',
+        'wizard/wizard_cp_acumulado_view.xml',
+        'wizard/wizard_remanentes_view.xml',
+        'wizard/wizard_control_periodo_view.xml',
+        
+        'views/transferencia.xml',
+        'views/control_presupuesto.xml',
+        'views/control_presupuestal_view.xml',
+        'views/documento.xml',
+        'views/ministracion_presupuestal.xml',
         'views/notas_estados_financieros.xml',
         'views/contabilidad.xml',
         'views/account_account_views.xml',

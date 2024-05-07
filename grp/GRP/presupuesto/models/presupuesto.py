@@ -18,8 +18,8 @@ class Documento(models.Model):
 
     clase_documento = fields.Many2one('presupuesto.clase_documento', string=u'Clase documento', required=True,track_visibility='onchange')
     version = fields.Many2one('presupuesto.version', string=u'Versión',default='0', required=True,track_visibility='onchange')
-    fecha_documento = fields.Date(string='Fecha de documento', required=True, default=datetime.today(),track_visibility='onchange')
-    fecha_contabilizacion = fields.Date(string='Fecha de contabilizacion', required=True, default=datetime.today(),track_visibility='onchange')
+    fecha_documento = fields.Date(string='Fecha de documento', required=True, default=fields.Datetime.now,track_visibility='onchange')
+    fecha_contabilizacion = fields.Date(string='Fecha de contabilizacion', required=True, default=fields.Datetime.now,track_visibility='onchange')
     # generar numero de años automaticamente
     ejercicio = fields.Selection(catalogos.EJERCICIO_SELECT, required=True,track_visibility='onchange')
     # generar numero de meses automaticamente
@@ -56,11 +56,11 @@ class Documento(models.Model):
     
     @api.onchange('fecha_documento')
     def _set_dates_fields(self):
-        fecha = self.fecha_documento
-        fecha2 = parse(fecha)
+        fecha = datetime.strptime(str(self.fecha_documento), '%Y-%m-%d')
+        
         self.update({'fecha_contabilizacion': fecha})
-        self.update({'periodo': fecha2.month})
-        self.update({'ejercicio': fecha2.year})
+        self.update({'periodo': str(fecha.month)})
+        self.update({'ejercicio': str(fecha.year)})
         
     def _compute_partida(self):
         #self.partida_presupuestal
@@ -1339,7 +1339,7 @@ class Transferencia(models.Model):
     _inherit = ['mail.thread'] 
     _order = 'fecha_documento ASC'
 
-    fecha_documento = fields.Date(string='Fecha de documento', required=True, default=datetime.today())
+    fecha_documento = fields.Date(string='Fecha de documento', required=True, default=fields.Datetime.now)
     fecha_contabilizacion = fields.Date(string='Fecha de contabilización', required=True)
     concepto = fields.Text(string='Concepto de reclasificación', track_visibility='onchange')
     ejercicio = fields.Selection(catalogos.EJERCICIO_SELECT, required=True)
@@ -1351,11 +1351,11 @@ class Transferencia(models.Model):
 
     @api.onchange('fecha_documento')
     def _set_dates_fields(self):
-        fecha = self.fecha_documento
-        fecha2 = parse(fecha)
+        fecha = datetime.strptime(str(self.fecha_documento), '%Y-%m-%d')
+        
         self.update({'fecha_contabilizacion': fecha})
-        self.update({'periodo': fecha2.month})
-        self.update({'ejercicio': fecha2.year})
+        self.update({'periodo': str(fecha.month)})
+        self.update({'ejercicio': str(fecha.year)})
 
     @api.depends(
         'ejercicio',
@@ -2903,8 +2903,8 @@ class polizas_presupuestales(models.Model):
     partidas = fields.Many2many('presupuesto.partida_presupuestal', string='Posición presupuestaria',relation='partidas_polizas_history', required=True,track_visibility='onchange')
     capitulo= fields.Selection([('1000','1000'),('2000','2000'),('3000','3000'),('5000','5000')],string='Capitulo',track_visibility='onchange')
     clase_documento = fields.Many2many('presupuesto.clase_documento', string='Clase documento',relation='clase_documento_history', required=True,track_visibility='onchange')
-    fecha_inicio=fields.Date(string='Fecha inicio', default=datetime.today(),track_visibility='onchange')
-    fecha_fin=fields.Date(string='Fecha fin', default=datetime.today(),track_visibility='onchange')
+    fecha_inicio=fields.Date(string='Fecha inicio', default=fields.Datetime.now,track_visibility='onchange')
+    fecha_fin=fields.Date(string='Fecha fin', default=fields.Datetime.now,track_visibility='onchange')
     no_poliza = fields.Char(string='Poliza')
     concepto = fields.Char(string='concepto',track_visibility='onchange')
     elaboro = fields.Char(string='elaboro',default='SJGH',track_visibility='onchange')

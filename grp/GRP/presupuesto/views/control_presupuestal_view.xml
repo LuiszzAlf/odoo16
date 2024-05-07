@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <!-- <template id="cpv" name="cpv" inherit_id="web.assets_backend">
+      <xpath expr="." position="inside">
+        <link rel="stylesheet" href="/presupuestos/static/src/css/custom_report.css"/>
+      </xpath>
+    </template> -->
+    <record model="ir.ui.view" id="presupuesto_presupuesto_cp_view_search">
+      <field name="name">presupuesto.view_cp.search</field>
+      <field name="model">presupuesto.view_cp</field>
+      <field name="arch" type="xml">
+        <search>
+          <field name="partida_presupuestal"/>
+          <!-- <filter string="Año" name="filter_by_ejercicio" domain="[('ejercicio', '=', ((context_today().strftime('%Y'))))]" /> -->
+          <!-- <filter string="Periodo" name="group_by_fecha" context="{'group_by':['fecha', 'nom_capitulo']}" /> -->
+        </search>
+      </field>
+    </record>
+
+    <record id="presupuesto_presupuesto_cp_view_form" model="ir.ui.view">
+      <field name="name">presupuesto.view_cp.form</field>
+      <field name="model">presupuesto.view_cp</field>
+      <field name="arch" type="xml">
+        <form string="Listado de Partida Presupuestal" edit="false" create="false">
+          <sheet>
+            <group col="4">
+              <field name="partida_presupuestal"/>
+              <field name="nom_capitulo"/>
+              <field name="denominacion"/>
+              <field name="ejercicio"/>
+              <field name="nom_mes"/>
+              <field name="aprobado"/>
+              <field name="remanente"/>
+              <field name="ampliacion"/>
+              <field name="reduccion"/>
+              <field name="modificado"/>
+              <field name="comprometido"/>
+              <field name="devengado"/>
+              <field name="ejercido"/>
+              <field name="pagado"/>
+              <field name="disponible"/>
+            </group>
+            <notebook>
+              <page string="Aprobado">
+                <field name="detalle_documento_original_ids">
+                  <tree>
+                    <field name="documento_id"/>
+                    <field name="importe" sum="importe"/>
+                  </tree>
+                </field>
+              </page>
+              <page string="Remanente">
+                <field name="detalle_documento_remanente_ids">
+                  <tree>
+                    <field name="documento_id"/>
+                    <field name="importe" sum="importe"/>
+                  </tree>
+                </field>
+              </page>
+              <page string="Ampliaciones">
+                <field name="detalle_documento_ampliacion_ids">
+                  <tree>
+                    <field name="documento_id"/>
+                    <field name="importe" sum="importe"/>
+                  </tree>
+                </field>
+              </page>
+              <page string="Reducciones">
+                <field name="detalle_documento_reduccion_ids">
+                  <tree>
+                    <field name="documento_id"/>
+                    <field name="importe" sum="importe"/>
+                  </tree>
+                </field>
+              </page>
+              <page string="Modificado">
+                <group col="4">
+                  <field name="presupuesto_aprobado" sum="presupuesto_aprobado"/>
+                </group>
+                <group col="4">
+                  <field name="presupuesto_remanente" sum="presupuesto_remanente"/>
+                </group>
+                <group col="4">
+                  <field name="presupuesto_ampliacion" sum="presupuesto_ampliacion"/>
+                </group>
+                <group col="4">
+                  <field name="presupuesto_reduccion" sum="presupuesto_reduccion"/>
+                </group>
+                <group col="4">
+                  <field name="presupuesto_modificado" sum="presupuesto_modificado"/>
+                </group>
+              </page>
+              <page string="Comprometido">
+                <field name="detalle_documento_comprometido_ids">
+                  <tree>
+                    <field name="documento_id"/>
+                    <field name="importe" sum="importe"/>
+                  </tree>
+                </field>
+              </page>
+              <page string="Devengado">
+                <field name="detalle_documento_devengado_ids">
+                  <tree>
+                    <field name="documento_id"/>
+                    <field name="importe" sum="importe"/>
+                  </tree>
+                </field>
+              </page>
+              <page string="Ejercido">
+                <field name="detalle_documento_ejercido_ids">
+                  <tree>
+                    <field name="documento_id"/>
+                    <field name="importe" sum="importe"/>
+                  </tree>
+                </field>
+              </page>
+              <page string="Pagado">
+                <field name="detalle_documento_pagado_ids">
+                  <tree>
+                    <field name="documento_id"/>
+                    <field name="importe" sum="importe"/>
+                  </tree>
+                </field>
+              </page>
+              <page string="Disponible">
+                <group col="4">
+                  <field name="presupuesto_modificado_disponible" sum="presupuesto_modificado_disponible"/>
+                </group>
+                <group col="4">
+                  <field name="presupuesto_devengado" sum="presupuesto_devengado"/>
+                </group>
+                <group col="4">
+                  <field name="presupuesto_disponible" sum="presupuesto_disponible"/>
+                </group>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="presupuesto_presupuesto_view_cp_view_tree" model="ir.ui.view">
+      <field name="name">presupuesto.view_cp.tree</field>
+      <field name="model">presupuesto.view_cp</field>
+      <field name="arch" type="xml">
+        <tree create="false">
+          <field name="partida_presupuestal"/>
+          <field name="nom_capitulo"/>
+          <field name="denominacion"/>
+          <field name="ejercicio"/>
+          <field name="nom_mes"/>
+          <field name="remanente" string="Remanente" sum="remanente"/>
+          <field name="aprobado" string="Egreso Aprobado" sum="aprobado"/>
+          <field name="ampliacion" string="Ampliaciones" sum="ampliacion"/>
+          <field name="reduccion" string="Reducciones" sum="reduccion"/>
+          <field name="modificado" string="Egreso Modificado" sum="modificado"/>
+          <field name="comprometido" string="Egreso Comprometido" sum="comprometido"/>
+          <field name="devengado" string="Egreso Devengado" sum="devengado"/>
+          <field name="ejercido" string="Egreso Ejercido" sum="ejercido"/>
+          <field name="pagado" string="Egreso Pagado" sum="pagado"/>
+          <field name="disponible" string="Egreso Disponible" sum="disponible"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="presupuesto_control_presu_action" model="ir.actions.act_window">
+      <field name="name">Control de presupuesto</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">presupuesto.view_cp</field>
+      <field name="view_mode">tree,form</field>
+      <field name="context">{'search_default_filter_by_ejercicio': 1, 'search_default_group_by_fecha': 1, 'search_default_group_by_nom_capitulo': 1,'group_by':['fecha', 'nom_capitulo']}</field>
+      <field name="domain">[('ejercicio', '=', ((context_today().strftime('%Y'))))]</field>
+      <field name="view_id" ref="presupuesto_presupuesto_view_cp_view_tree"/>
+    </record>
+
+
+  </data>
+</odoo>

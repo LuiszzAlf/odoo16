@@ -5,39 +5,49 @@
         <field name="name">control.periodos.wizard.form</field>
         <field name="model">control.periodos.wizard</field>
         <field name="arch" type="xml">
-        <form>
-        <h1>
-            <field name="tipo_up" class="oe_inline"/>
-        </h1>
-            <group>
+            <form>
+                <h1>
+                    <field name="tipo_up" class="oe_inline"/>
+                </h1>
                 <group>
-                   <field name="periodo"/>
-                    <field name="ejercicio"/>
-                    <field name="version"/>
+                    <group>
+                        <field name="periodo"/>
+                        <field name="ejercicio"/>
+                        <field name="version"/>
+                    </group>
+                    <group>
+                        <field name="partida_presupuestal" attrs="{'invisible': [('tipo_up', '=', 1)]}" string="Posicion Presupuestaria"/>
+                    </group>
+                    <group string="">
+                    </group>
+                    <group string="Opciones">
+                        <h2>
+                            <field name="status" string="Estatus a cambiar"/>
+                        </h2>
+                    </group>
                 </group>
-                <group>
-                   <field name="partida_presupuestal"  attrs="{'invisible': [('tipo_up', '=', 1)]}" string="Posicion Presupuestaria"/>
-                </group>
-                <group string="">
-                </group>
-                <group string="Opciones">
-                    <h2><field name="status" string="Estatus a cambiar"/></h2>
-                </group>
-            </group>
-            <footer>
-              <div attrs="{'invisible': [('tipo_up', '!=', 1)]}">
-                <button name="search_periodo" string="Guardar cambios" type="object" default_focus="1" class="oe_highlight"/>
+                <footer>
+                    <div attrs="{'invisible': [('tipo_up', '!=', 1)]}">
+                        <button name="search_periodo" string="Guardar cambios" type="object" default_focus="1" class="oe_highlight"/>
                 or
-                <button string="Cancelar" class="oe_link" special="cancel" />
-              </div>
-              <div attrs="{'invisible': [('tipo_up', '=', 1)]}">
-                <button name="search_periodo_partida" string="Guardar cambio" type="object" default_focus="1" class="oe_highlight"/>
+                        <button string="Cancelar" class="oe_link" special="cancel" />
+                    </div>
+                    <div attrs="{'invisible': [('tipo_up', '=', 1)]}">
+                        <button name="search_periodo_partida" string="Guardar cambio" type="object" default_focus="1" class="oe_highlight"/>
                 or
-                <button string="Cancelar" class="oe_link" special="cancel" />
-              </div>
-            </footer>
+                        <button string="Cancelar" class="oe_link" special="cancel" />
+                    </div>
+                </footer>
 
-        </form>
+            </form>
         </field>
+    </record>
+    <record id="action_wizard_control_periodos" model="ir.actions.act_window">
+        <field name="name">Control de Periodos</field>
+        <field name="res_model">control.periodos.wizard</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_control_periodos_wizard" />
+        <field name="target">new</field>
     </record>
 </odoo>
