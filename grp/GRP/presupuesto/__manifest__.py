@@ -29,7 +29,9 @@ Contabilidad:
         'wizard/wizard_cp_acumulado_view.xml',
         'wizard/wizard_remanentes_view.xml',
         'wizard/wizard_control_periodo_view.xml',
+        'wizard/wizard_polizas_presupuestales.xml',
         
+        'views/polizas_presupuestales.xml',
         'views/transferencia.xml',
         'views/control_presupuesto.xml',
         'views/control_presupuestal_view.xml',

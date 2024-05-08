@@ -36,7 +36,7 @@ from . import wizard_cp_acumulado
 # from . import wizard_reportes_financierosv3
 # from . import wizard_balanza_v2
 # from . import wizard_kardex
-# from . import wizard_polizas_presupuestales
+from . import wizard_polizas_presupuestales
 # from . import wizard_sp_report
 # from . import wizard_rechaza_sc
 # from . import wizard_inventario_historial

@@ -18,6 +18,9 @@
         <menuitem id="presupuestos_operaciones_submenu" name="Operaciones" parent="presupuestos_presupuesto_submenu" sequence="5" />
         <menuitem id="presupuesto_control_periodos" name="Control de Periodos" parent="presupuestos_operaciones_submenu" action="action_wizard_control_periodos"/>
         <menuitem id="presupuesto_remanentes" name="Remanentes" parent="presupuestos_operaciones_submenu" action="action_wizard_remanentes"/>
+        <menuitem id="presupuesto_polizas_presupuestales" name="Polizas Presupuestales" parent="presupuestos_operaciones_submenu" action="wizard_polizas_presupuestales_action"/>
+        <menuitem id="presupuesto_polizas_presupuestales_historico" name="Polizas Presupuestales histórico" parent="presupuestos_operaciones_submenu" action="polizas_presupuestales_action"/>
+        
         
         <menuitem id="presupuestos_configuracion_submenu" name="Configuración" parent="presupuestos_menu" sequence="2" />
         <menuitem id="presupuestos_catalogos_submenu" name="Catálogos" parent="presupuestos_configuracion_submenu" sequence="5" />

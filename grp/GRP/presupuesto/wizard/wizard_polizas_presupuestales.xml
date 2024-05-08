@@ -45,4 +45,12 @@
       </tree>
     </field>
   </record>
+  <record id="wizard_polizas_presupuestales_action" model="ir.actions.act_window">
+    <field name="name">Pólizas Presupuestales</field>
+    <field name="res_model">polizas_presupuestales.wizard</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="view_polizas_presupuestales" />
+    <field name="target">new</field>
+  </record>
 </odoo>

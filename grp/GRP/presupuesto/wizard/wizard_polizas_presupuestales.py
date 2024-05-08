@@ -9,10 +9,8 @@ import base64
 import pandas as pd
 import json
 from dateutil.parser import parse
-from StringIO import StringIO
 from dateutil.relativedelta import relativedelta
 
-PERIODO_SELECT = [(periodo, periodo) for periodo in range(1,13)]
 
 class polizas_presupuestales_wizard(models.TransientModel):
     _name = 'polizas_presupuestales.wizard'
@@ -32,13 +30,13 @@ class polizas_presupuestales_wizard(models.TransientModel):
     csv_urls = fields.Char(compute='search_pc_button')
 
     
-    @api.multi
+    
     def moves_poliza(self):
         
         pass
 
 
-    @api.multi
+    
     def pdf_poliza(self):
         obj_poliza = self.env['polizas_presupuestales']
         ids_pareg=[]
