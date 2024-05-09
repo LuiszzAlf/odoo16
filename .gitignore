@@ -9,12 +9,12 @@
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
+*.pyc
 __pycache__/
 *.cpython-39.pyc
 *.py[cod]
 *$py.class
 *.cpython
-*.pyc
 
 # C extensions
 *.so

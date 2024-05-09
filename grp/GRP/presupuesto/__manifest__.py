@@ -30,6 +30,7 @@ Contabilidad:
         'wizard/wizard_remanentes_view.xml',
         'wizard/wizard_control_periodo_view.xml',
         'wizard/wizard_polizas_presupuestales.xml',
+        'wizard/wizard_polizas_presupuestales.xml',
         
         'views/polizas_presupuestales.xml',
         'views/transferencia.xml',
@@ -39,6 +40,7 @@ Contabilidad:
         'views/ministracion_presupuestal.xml',
         'views/notas_estados_financieros.xml',
         'views/contabilidad.xml',
+        # 'views/clc_view.xml',
         'views/account_account_views.xml',
         'views/configuracion/version.xml',
         'views/configuracion/clase_documento.xml',
