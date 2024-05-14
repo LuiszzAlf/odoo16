@@ -9,3 +9,4 @@ RUN echo "Instalando dependencias barcode"
 # RUN pip install pybarcode --pre
 RUN echo "Finish :)"
 # CMD odoo --dev=xml
+EXPOSE 8080
