@@ -9,7 +9,7 @@ services:
     depends_on:
       - mydb
     ports:
-      - "25069:8069"
+      - "8080:8069"
     environment:
       - HOST=mydb
       - USER=odoo
@@ -23,7 +23,7 @@ services:
     container_name: postgres15
     image: postgres:15
     ports:
-      - "25469:5432"
+      - "5432:5432"
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_PASSWORD=myodoo
