@@ -9,7 +9,7 @@ services:
     depends_on:
       - mydb
     ports:
-      - "8080:8069"
+      - "80:8069"
     environment:
       - HOST=mydb
       - USER=odoo
